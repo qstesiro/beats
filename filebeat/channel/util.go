@@ -36,7 +36,7 @@ type subOutlet struct {
 func SubOutlet(out Outleter) Outleter {
 	s := &subOutlet{
 		done: make(chan struct{}),
-		ch:   make(chan beat.Event),
+		ch:   make(chan beat.Event), // 注意是无缓冲chan
 		res:  make(chan bool, 1),
 	}
 

@@ -86,13 +86,14 @@ func New(
 		BeatDone: input.beatDone,
 		Meta:     nil,
 	}
+	// ts := time.Now().UnixMilli() // for debug ???
 	var ipt Input
 	ipt, err = f(conf, connector, context)
 	if err != nil {
 		return input, err
 	}
 	input.input = ipt
-
+	// logp.Info("----------------- log.Input create dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
 	return input, nil
 }
 
@@ -105,7 +106,7 @@ func (p *Runner) Start() {
 		// Make sure start is only completed when Run did a complete first scan
 		defer onceWg.Wait()
 	}
-
+	logp.Info("---------------------- input/Runner start") // for debug ???
 	onceWg.Add(1)
 	inputList.Add(p.config.Type)
 	// Add waitgroup to make sure input is finished

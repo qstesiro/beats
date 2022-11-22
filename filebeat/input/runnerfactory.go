@@ -18,11 +18,14 @@
 package input
 
 import (
+	// "time"
+
 	"github.com/elastic/beats/v7/filebeat/channel"
 	"github.com/elastic/beats/v7/filebeat/registrar"
 	"github.com/elastic/beats/v7/libbeat/beat"
 	"github.com/elastic/beats/v7/libbeat/cfgfile"
 	"github.com/elastic/beats/v7/libbeat/common"
+	// "github.com/elastic/beats/v7/libbeat/logp" // for debug ???
 	"github.com/elastic/beats/v7/libbeat/publisher/pipeline"
 )
 
@@ -48,12 +51,13 @@ func (r *RunnerFactory) Create(
 	c *common.Config,
 ) (cfgfile.Runner, error) {
 	connector := r.outlet(pipeline)
+	// ts := time.Now().UnixMilli() // for debug ???
 	p, err := New(c, connector, r.beatDone, r.registrar.GetStates())
 	if err != nil {
 		// In case of error with loading state, input is still returned
 		return p, err
 	}
-
+	// logp.Info("----------------- input.Runner create dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
 	return p, nil
 }
 

@@ -50,8 +50,8 @@ func (s *signalWait) Add(fn signaler) {
 	s.count++
 	go func() {
 		fn()
-		var v struct{}
-		s.signals <- v
+		// var v struct{}
+		s.signals <- struct{}{}
 	}()
 }
 

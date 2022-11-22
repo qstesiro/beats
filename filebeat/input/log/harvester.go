@@ -33,6 +33,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -124,7 +125,7 @@ func NewHarvester(
 	state file.State,
 	states *file.States,
 	publishState func(file.State) bool,
-	outletFactory OutletFactory,
+	outletFactory OutletFactory, // 注意此处不是channel.OutletFactory
 ) (*Harvester, error) {
 
 	id, err := uuid.NewV4()
@@ -258,7 +259,7 @@ func (h *Harvester) Run() error {
 		return nil
 	default:
 	}
-
+	count := 0 // for debug ???
 	defer func() {
 		// Channel to stop internal harvester routines
 		h.stop()
@@ -270,6 +271,10 @@ func (h *Harvester) Run() error {
 
 		// Marks harvester stopping completed
 		h.stopWg.Done()
+		logp.Info("-------------------- return read file: %v, count: %d", h.state.Source, count) // for debug ???
+		if strings.Index(h.state.Source, "step-scan") != -1 {
+			logp.Info("-------------------- catch step-scan") // for debug ???
+		}
 	}()
 
 	harvesterStarted.Add(1)
@@ -306,12 +311,16 @@ func (h *Harvester) Run() error {
 		h.monitorFileSize()
 		h.doneWg.Done()
 	}()
-
+	logp.Info("-------------------- read file: %v", h.state.Source) // for debug ???
 	for {
 		select {
 		case <-h.done:
 			return nil
 		default:
+		}
+		// for debug ???
+		if strings.Index(h.state.Source, "step-scan") != -1 {
+			logp.Info("-------------------- catch step-scan") // for debug ???
 		}
 
 		message, err := h.reader.Next()
@@ -343,9 +352,10 @@ func (h *Harvester) Run() error {
 		state := h.getState()
 		startingOffset := state.Offset
 		state.Offset += int64(message.Bytes)
-
+		count += 1 // for debug
 		// Stop harvester in case of an error
 		if !h.onMessage(forwarder, state, message, startingOffset) {
+			logp.Info("-------------------- send message fail: %v, count: %d", h.state.Source, count) // for debug ???
 			return nil
 		}
 

@@ -476,11 +476,11 @@ func (fb *Filebeat) Run(b *beat.Beat) error {
 		}
 	}
 	adiscover.Start()
-
+	// 程序完成初始化开始执行并等待结束信号
 	// Add done channel to wait for shutdown signal
 	waitFinished.AddChan(fb.done)
 	waitFinished.Wait()
-
+	// 接到结束信息后续开始清理
 	// Stop reloadable lists, autodiscover -> Stop crawler -> stop inputs -> stop harvesters
 	// Note: waiting for crawlers to stop here in order to install wgEvents.Wait
 	//       after all events have been enqueued for publishing. Otherwise wgEvents.Wait

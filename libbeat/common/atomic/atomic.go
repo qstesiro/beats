@@ -18,7 +18,7 @@
 // Package atomic provides common primitive types with atomic accessors.
 package atomic
 
-import a "sync/atomic"
+import a "sync/atomic" // uber已经有一个包做了类似的处理 ???
 
 // Bool provides an atomic boolean type.
 type Bool struct{ u Uint32 }

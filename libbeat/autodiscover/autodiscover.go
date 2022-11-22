@@ -18,6 +18,7 @@
 package autodiscover
 
 import (
+	// "encoding/json"
 	"fmt"
 	"time"
 
@@ -181,8 +182,8 @@ func (a *Autodiscover) handleStart(event bus.Event) bool {
 	if _, ok := a.configs[eventID]; !ok {
 		a.configs[eventID] = make(map[uint64]*reload.ConfigWithMeta)
 	}
-
-	configs, err := a.configurer.CreateConfig(event)
+	a.printEvent(event)                              // for debug ???
+	configs, err := a.configurer.CreateConfig(event) // paths中的变化部分在此处从事件中提取出 ???
 	if err != nil {
 		a.logger.Debugf("Could not generate config from event %v: %v", event, err)
 		return false
@@ -206,7 +207,13 @@ func (a *Autodiscover) handleStart(event bus.Event) bool {
 			a.logger.Debugf("Could not hash config %v: %v", common.DebugString(config, true), err)
 			continue
 		}
-
+		// ts := time.Now().UnixMilli() // for debug ???
+		// CheckConfig上下文中调用 !!!
+		// - input.Runner
+		// - container.Input
+		// - log.Input
+		// 此处虽然创建但是没有运行只是为了验证config的正确性
+		// 实际创建运行是在runners.Reload中处理
 		err = a.factory.CheckConfig(config)
 		if err != nil {
 			a.logger.Error(errors.Wrap(err, fmt.Sprintf(
@@ -214,15 +221,17 @@ func (a *Autodiscover) handleStart(event bus.Event) bool {
 				common.DebugString(config, true))))
 			continue
 		}
-
+		// a.logger.Infof("--------------------- check config dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
 		// Update meta no matter what
 		dynFields := a.meta.Store(hash, meta)
 
 		if cfg, ok := a.configs[eventID][hash]; ok {
-			a.logger.Debugf("Config %v is already running", common.DebugString(config, true))
+			// a.logger.Debugf("Config %v is already running", common.DebugString(config, true))
+			// a.logger.Infof("Config %v is already running", common.DebugString(config, true)) // for debug ???
 			newCfg[hash] = cfg
 			continue
 		} else {
+			// a.logger.Infof("Config %v is new", common.DebugString(config, true)) // for debug ???
 			newCfg[hash] = &reload.ConfigWithMeta{
 				Config: config,
 				Meta:   &dynFields,
@@ -235,6 +244,7 @@ func (a *Autodiscover) handleStart(event bus.Event) bool {
 	// If the new add event has lesser configs than the previous stable configuration then it means that there were
 	// configs that were removed in something like a resync event.
 	if len(newCfg) < len(a.configs[eventID]) {
+		a.logger.Infof("Config update")
 		updated = true
 	}
 
@@ -263,7 +273,7 @@ func (a *Autodiscover) handleStop(event bus.Event) bool {
 	}
 
 	delete(a.configs, eventID)
-
+	a.printEvent(event) // for debug ???
 	return updated
 }
 
@@ -314,4 +324,40 @@ func (a *Autodiscover) Stop() {
 	// Stop runners
 	a.runners.Stop()
 	a.logger.Info("Stopped autodiscover manager")
+}
+
+func (a *Autodiscover) printEvent(event bus.Event) {
+	status := "unknown"
+	if _, ok := event["start"]; ok {
+		status = "start"
+	}
+	if _, ok := event["stop"]; ok {
+		status = "stop"
+	}
+	container, pod, id := "", "", ""
+	if v, ok := event["meta"]; ok {
+		if v, ok := (v.(common.MapStr))["kubernetes"]; ok {
+			if v, ok := (v.(common.MapStr))["container"]; ok {
+				if v, ok := (v.(common.MapStr))["name"]; ok {
+					container = v.(string)
+				}
+			}
+			if v, ok := (v.(common.MapStr))["pod"]; ok {
+				if v, ok := (v.(common.MapStr))["name"]; ok {
+					pod = v.(string)
+				}
+			}
+		}
+		if v, ok := (v.(common.MapStr))["container"]; ok {
+			if v, ok := (v.(common.MapStr))["id"]; ok {
+				id = v.(string)
+			}
+		}
+	}
+	a.logger.Infof(
+		"---------------- status: %v, %v:%v:%v",
+		status, pod, container, id,
+	)
+	// buf, _ := json.Marshal(event)
+	// a.logger.Infof("event: %v\n", string(buf))
 }

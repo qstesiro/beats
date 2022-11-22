@@ -119,7 +119,7 @@ func (s *States) CleanupWith(fn func(string)) (int, int) {
 		state := &s.states[i]
 		canExpire := state.TTL > 0
 		expired := (canExpire && currentTime.Sub(state.Timestamp) > state.TTL)
-
+		// 删除逻辑算法处理优秀 !!!
 		if state.TTL == 0 || expired {
 			if !state.Finished {
 				logp.Err("State for %s should have been dropped, but couldn't as state is not finished.", state.Source)

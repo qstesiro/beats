@@ -59,7 +59,7 @@ func NewPodEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface, pub
 	if err != nil {
 		return nil, err
 	}
-
+	// config.SyncPeriod = 2 * time.Minute // for debug ???
 	// Ensure that node is set correctly whenever the scope is set to "node". Make sure that node is empty
 	// when cluster scope is enforced.
 	if config.Scope == "node" {
@@ -67,7 +67,11 @@ func NewPodEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface, pub
 	} else {
 		config.Node = ""
 	}
-
+	// for debug ???
+	// {
+	// 	// config.Node = "prd-dmz-ack22128worker"
+	// 	config.Node = "prd-10.162.167.47-s01764-paas"
+	// }
 	logger.Debugf("Initializing a new Kubernetes watcher using node: %v", config.Node)
 
 	watcher, err := kubernetes.NewWatcher(client, &kubernetes.Pod{}, kubernetes.WatchOptions{
@@ -130,7 +134,8 @@ func (p *pod) OnAdd(obj interface{}) {
 	defer p.crossUpdate.RUnlock()
 
 	p.logger.Debugf("Watcher Pod add: %+v", obj)
-	p.emit(obj.(*kubernetes.Pod), "start")
+	p.logger.Infof("Watcher Pod add") // for debug ???
+	p.emit(obj.(*kubernetes.Pod), "start", "add")
 }
 
 // OnUpdate handles events for pods that have been updated.
@@ -142,9 +147,12 @@ func (p *pod) OnUpdate(obj interface{}) {
 }
 
 func (p *pod) unlockedUpdate(obj interface{}) {
+	// pod删除时还会触发一次更新不明白 ???
+	// 更新时为什么要stop,start也不明白
 	p.logger.Debugf("Watcher Pod update: %+v", obj)
-	p.emit(obj.(*kubernetes.Pod), "stop")
-	p.emit(obj.(*kubernetes.Pod), "start")
+	p.logger.Infof("Watcher Pod update") // for debug ???
+	// p.emit(obj.(*kubernetes.Pod), "stop", "update")
+	p.emit(obj.(*kubernetes.Pod), "start", "update")
 }
 
 // OnDelete stops pod objects that are deleted.
@@ -153,7 +161,8 @@ func (p *pod) OnDelete(obj interface{}) {
 	defer p.crossUpdate.RUnlock()
 
 	p.logger.Debugf("Watcher Pod delete: %+v", obj)
-	p.emit(obj.(*kubernetes.Pod), "stop")
+	p.logger.Infof("Watcher Pod delete") // for debug ???
+	p.emit(obj.(*kubernetes.Pod), "stop", "delete")
 }
 
 // GenerateHints creates hints needed for hints builder.
@@ -302,13 +311,25 @@ func getContainersInPod(pod *kubernetes.Pod) []*containerInPod {
 // period defined in `CleanupTimeout`.
 // Network information is only included in events for running containers
 // and for pods with at least one running container.
-func (p *pod) emit(pod *kubernetes.Pod, flag string) {
+func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数 for debug ???
 	annotations := podAnnotations(pod)
 	namespaceAnnotations := podNamespaceAnnotations(pod, p.namespaceWatcher)
 
 	eventList := make([][]bus.Event, 0)
 	portsMap := common.MapStr{}
 	containers := getContainersInPod(pod)
+	// for debug ???
+	if len(containers) > 0 {
+		val := ""
+		for _, e := range containers {
+			if !(e.id == "" && flag != "stop") {
+				val += fmt.Sprintf("%v:%v:%v:%v\n", op, pod.ObjectMeta.Name, e.spec.Name, e.id)
+			}
+		}
+		if val != "" {
+			logp.Info("+++++++++++++++++++++++ flag: %v \n%v", flag, val)
+		}
+	}
 	anyContainerRunning := false
 	for _, c := range containers {
 		if c.status.State.Running != nil {

@@ -73,6 +73,8 @@ type Input struct {
 	fileStateIdentifier file.StateIdentifier
 }
 
+// var Paths map[*common.Config][]string // for debug ???
+
 // NewInput instantiates a new Log
 func NewInput(
 	cfg *common.Config,
@@ -117,6 +119,7 @@ func NewInput(
 	if err != nil {
 		return nil, err
 	}
+
 	defer cleanupIfNeeded(out.Close)
 
 	// stateOut will only be unblocked if the beat is shut down.
@@ -141,21 +144,23 @@ func NewInput(
 		meta:                meta,
 		fileStateIdentifier: identifier,
 	}
-
+	// ts := time.Now().UnixMilli() // for debug ???
 	// Create empty harvester to check if configs are fine
 	// TODO: Do config validation instead
 	_, err = p.createHarvester(file.State{}, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	err = p.loadStates(context.States)
-	if err != nil {
-		return nil, err
-	}
-
-	logp.Info("Configured paths: %v", p.config.Paths)
-
+	// logp.Info("----------------- log.Harvester create dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
+	// ts = time.Now().UnixMilli()                                                                                                     // for debug ???
+	// 临时停止 ???
+	// err = p.loadStates(context.States)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// logp.Info("----------------- log.Input load states dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
+	// logp.Info("----------------------- Configured paths: %v, states: %d", p.config.Paths, len(context.States))
+	// Paths[cfg] = p.config.Paths // for debug ???
 	cleanupNeeded = false
 	go p.stopWhenDone()
 
@@ -167,7 +172,7 @@ func NewInput(
 // the input will be loaded and updated. All other states will not be touched.
 func (p *Input) loadStates(states []file.State) error {
 	logp.Debug("input", "exclude_files: %s. Number of states: %d", p.config.ExcludeFiles, len(states))
-
+	sum := int64(0)
 	for _, state := range states {
 		// Check if state source belongs to this input. If yes, update the state.
 		if p.matchesFile(state.Source) && p.matchesMeta(state.Meta) {
@@ -186,16 +191,29 @@ func (p *Input) loadStates(states []file.State) error {
 				state.Id = newId
 				state.IdentifierName = identifierName
 			}
-
+			ts := time.Now().UnixMilli() // for debug ???
 			// Update input states and send new states to registry
 			err := p.updateState(state)
 			if err != nil {
 				logp.Err("Problem putting initial state: %+v", err)
 				return err
 			}
+			sum += (time.Now().UnixMilli() - ts)
 		}
 	}
-
+	// for debug ???
+	if sum > int64(0) {
+		logp.Info(
+			"----------------- log.Input update states dura: %ds, %dms, prev: %d, input: %d",
+			sum/1e3, sum,
+			p.states.Count(), len(states),
+		)
+	} else {
+		logp.Info(
+			"----------------- log.Input update states prev: %d, input: %d",
+			p.states.Count(), len(states),
+		)
+	}
 	logp.Debug("input", "input with previous states loaded: %v", p.states.Count())
 	return nil
 }
@@ -203,6 +221,7 @@ func (p *Input) loadStates(states []file.State) error {
 // Run runs the input
 func (p *Input) Run() {
 	logp.Debug("input", "Start next scan")
+	// logp.Info("--------------------- start next scan: %v", p.config.Paths) // for debug ???
 
 	// TailFiles is like ignore_older = 1ns and only on startup
 	if p.config.TailFiles {
@@ -263,6 +282,7 @@ func (p *Input) Run() {
 func (p *Input) cleanupStates() {
 	beforeCount := p.states.Count()
 	cleanedStates, pendingClean := p.states.Cleanup()
+	// Pending代表未来可能超时但是当前还没有超时(命名不好)
 	logp.Debug("input", "input states cleaned up. Before: %d, After: %d, Pending: %d",
 		beforeCount, beforeCount-cleanedStates, pendingClean)
 }
@@ -673,7 +693,7 @@ func (p *Input) isCleanInactive(state file.State) bool {
 func subOutletWrap(outlet channel.Outleter) func() channel.Outleter {
 	var subOutlet channel.Outleter
 	return func() channel.Outleter {
-		if subOutlet == nil {
+		if subOutlet == nil { // 利用闭包达到只初始化一次 !!
 			subOutlet = channel.SubOutlet(outlet)
 		}
 		return subOutlet
@@ -795,6 +815,8 @@ func (p *Input) Stop() {
 
 		// stop all communication between harvesters and publisher pipeline
 		p.outlet.Close()
+
+		logp.Info("------------------- Unconfigured paths: %v", p.config.Paths) // for debug ???
 	})
 }
 
@@ -807,4 +829,8 @@ func (p *Input) stopWhenDone() {
 	}
 
 	p.Wait()
+}
+
+func (p *Input) Paths() []string {
+	return p.config.Paths
 }

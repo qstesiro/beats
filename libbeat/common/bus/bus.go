@@ -109,6 +109,7 @@ func (b *bus) Publish(e Event) {
 
 	for _, listener := range b.listeners {
 		if listener.interested(e) {
+			b.log.Infof("----------------- listener channel size: %d", len(listener.channel)) // for debug ???
 			listener.channel <- e
 		}
 	}

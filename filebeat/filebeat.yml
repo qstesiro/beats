@@ -19,15 +19,36 @@ filebeat.inputs:
 # Below are the input specific configurations.
 
 - type: log
+# - type: container
 
   # Change to true to enable this input configuration.
-  enabled: true
+  # enabled: true
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
     # - /var/log/*.log
-    - /home/qstesiro/github.com/qstesiro/beats/filebeat/demo.log
+    # - /home/qstesiro/github.com/qstesiro/beats/filebeat/*link.log
+    - /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-01.log
     #- c:\programdata\elasticsearch\logs\*
+    # - /var/lib/docker/containers/*/*.log
+
+  symlinks: true
+
+- type: log
+# - type: container
+
+  # Change to true to enable this input configuration.
+  enabled: false
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    # - /var/log/*.log
+    # - /home/qstesiro/github.com/qstesiro/beats/filebeat/*link.log
+    - /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-02.log
+    #- c:\programdata\elasticsearch\logs\*
+    # - /var/lib/docker/containers/*/*.log
+
+  symlinks: true
 
   # Exclude lines. A list of regular expressions to match. It drops the lines that are
   # matching any regular expression from the list.
@@ -217,12 +238,15 @@ output.console:
 
 # Sets log level. The default log level is info.
 # Available log levels are: error, warning, info, debug
-#logging.level: debug
+logging.level: debug
 
 # At debug level, you can selectively enable logging only for some components.
 # To enable all selectors use ["*"]. Examples of other selectors are "beat",
 # "publisher", "service".
-#logging.selectors: ["*"]
+logging.selectors: ["*"]
+
+logging.to_stderr: true
+logging.metrics.enabled: false
 
 # ============================= X-Pack Monitoring ==============================
 # Filebeat can export internal metrics to a central Elasticsearch monitoring

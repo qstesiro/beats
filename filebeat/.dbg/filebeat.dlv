@@ -1,3 +1,106 @@
-b main.main
+# b main.main
+
+# instance
+# b instance/beat.go:175
+# b instance/beat.go:354
+# b instance.(*Beat).createOutput
+# b instance.(*Beat).launch
+# b instance.handleError
+
+# outputs
+# b outputs.Load
+
+# autodiscover
+# b autodiscover.(*registry).AddProvider
+# b autodiscover.NewAutodiscover
+# b autodiscover.(*Autodiscover).Start
+# b autodiscover.(*Autodiscover).handleStart
+# b autodiscover.(*Autodiscover).printEvent
+# b autodiscover/autodiscover.go:217
+
+# b cfgfile.(*RunnerList).Reload
+
+# b kubernetes.AutodiscoverBuilder
+# b kubernetes.NewPodEventer
+# b kubernetes.(*pod).OnAdd
+# b kubernetes.(*pod).OnUpdate
+# b kubernetes.(*pod).OnDelete
+# b kubernetes/pod.go:319
+
+# filebeat
+# b beater.newBeater
+# b beater.newCrawler
+# b beater.(*crawler).Start
+# b beater.(*crawler).Stop
+# b beater.(*crawler).startInput
+# b beater.(*Filebeat).Run
+
+# input
+# b input.New
+# b input.(*Runner).Stop
+# b input.(*Runner).stop
+# b input.NewRunnerFactory
+# b input.(*RunnerFactory).Create
+
+# input/container
+# b container.NewInput
+
+# input/log
+# b log.NewInput
+# b log.(*Input).Run
+# b log.(*Input).scan
+# b log.(*Input).harvestExistingFile
+# b log.(*Input).getFiles
+# b log.subOutletWrap
+# b log/input.go:679
+# b log.(*Input).loadStates
+
+# b input/input.go:136
+# b log/input.go:233
+# b log/input.go:679
+
+# harvester
+# b log.NewHarvester
+# b log.(*Harvester).Setup
+# b log.(*Harvester).Run
+# b log.(*Harvester).stop
+# b log/harvester.go:276
+# b log/harvester.go:323
+# b memqueue.(*openState).publish
+# b harvester.(*Forwarder).Send
+# b log/harvester.go:325
+# b channel.(*subOutlet).Close
+# b channel/util.go:115
+# b channel/util.go:117
+# b channel.CloseOnSignal
+
+# channel
+# b channel.(*pipelineConnector).ConnectWith
+b channel.(*outlet).OnEvent
+# b pipeline.(*client).publish
+# b memqueue.(*ackProducer).Publish
+
+# b channel/util.go:45
+# b acker.(*trackingACKer).AddEvent
+# b logp/logger.go:53
+
+# b memqueue.(*directEventLoop).handleInsert
+
+# pipeline
+# b pipeline.makeClientWorker
+# b pipeline.newOutputController
+# b pipeline.(*outputController).Set
+# b pipeline.newEventConsumer
+
+# console
+# b console.newConsole
+# b console.Publish
+
+# b compat.(composeFactory).CheckConfig
+
+# memqueue
+# b memqueue.(*consumer).Get
+
+# clearall
 
 g

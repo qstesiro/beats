@@ -1,0 +1,32 @@
+filebeat:
+  autodiscover:
+    providers:
+    - hints:
+        default_config:
+          clean_inactive: 72h
+          ignore_older: 48h
+          multiline:
+            match: after
+            max_lines: 1000
+            negate: false
+            pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
+            type: pattern
+          paths:
+          - /var/log/containers/*${data.kubernetes.container.id}.log
+          type: container
+        enabled: true
+      # node: ${NODE_NAME}
+      # node: prd-dmz-ack22128worker
+      node: prd-dmz-ack21194worker
+      # node: prd-10.162.167.47-s01764-paas
+      type: kubernetes
+
+output:
+  console:
+    pretty: true
+
+logging:
+  level: error
+  selectors: ["*"]
+  to_stderr: true
+  metrics.enabled: false

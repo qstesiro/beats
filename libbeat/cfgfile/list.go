@@ -21,7 +21,7 @@ import (
 	"sync"
 
 	"github.com/joeshaw/multierror"
-	"github.com/mitchellh/hashstructure"
+	"github.com/mitchellh/hashstructure" // !!!
 	"github.com/pkg/errors"
 
 	"github.com/elastic/beats/v7/libbeat/beat"
@@ -56,7 +56,7 @@ func (r *RunnerList) Reload(configs []*reload.ConfigWithMeta) error {
 	defer r.mutex.Unlock()
 
 	var errs multierror.Errors
-
+	// 注意此的处理算法 !!!
 	startList := map[uint64]*reload.ConfigWithMeta{}
 	stopList := r.copyRunnerList()
 
@@ -103,6 +103,7 @@ func (r *RunnerList) Reload(configs []*reload.ConfigWithMeta) error {
 		}
 
 		r.logger.Debugf("Starting runner: %s", runner)
+		r.logger.Infof("------------------- starting runner: %s", runner) // for debug ???
 		r.runners[hash] = runner
 		runner.Start()
 		moduleStarts.Add(1)

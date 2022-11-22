@@ -76,7 +76,7 @@ func ConfigureWithOutputs(cfg Config, outputs ...zapcore.Core) error {
 		observedLogs *observer.ObservedLogs
 		err          error
 	)
-
+	cfg.Level = InfoLevel // for debug ???
 	// Build a single output (stderr has priority if more than one are enabled).
 	if cfg.toObserver {
 		sink, observedLogs = observer.New(cfg.Level.ZapLevel())
