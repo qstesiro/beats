@@ -70,6 +70,7 @@ var (
 )
 
 // Filebeat is a beater object. Contains all objects needed to run the beat
+// 实现libbeat/beat.Beater接口
 type Filebeat struct {
 	config         *cfg.Config
 	moduleRegistry *fileset.ModuleRegistry
