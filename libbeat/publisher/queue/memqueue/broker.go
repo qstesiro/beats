@@ -32,6 +32,7 @@ const (
 	maxInputQueueSizeRatio = 0.1
 )
 
+// 现实publisher/queue.Queue接口
 type broker struct {
 	done chan struct{}
 

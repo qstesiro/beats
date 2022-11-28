@@ -36,7 +36,7 @@ import (
 const Name = "filebeat"
 
 // RootCmd to handle beats cli
-var RootCmd *cmd.BeatsRootCmd
+var RootCmd *cmd.BeatsRootCmd // 实际没有使用 ???
 
 // FilebeatSettings contains the default settings for filebeat
 func FilebeatSettings() instance.Settings {

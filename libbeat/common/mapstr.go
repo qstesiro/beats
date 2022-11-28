@@ -64,7 +64,7 @@ func (m MapStr) Update(d MapStr) {
 
 // DeepUpdate recursively copies the key-value pairs from d to this map.
 // If the key is present and a map as well, the sub-map will be updated recursively
-// via DeepUpdate.
+// via DeepUpdate. (并不深度拷贝list)
 // DeepUpdateNoOverwrite is a version of this function that does not
 // overwrite existing values.
 func (m MapStr) DeepUpdate(d MapStr) {
@@ -78,6 +78,7 @@ func (m MapStr) DeepUpdateNoOverwrite(d MapStr) {
 	m.deepUpdateMap(d, false)
 }
 
+// 并不深度拷贝list
 func (m MapStr) deepUpdateMap(d MapStr, overwrite bool) {
 	for k, v := range d {
 		switch val := v.(type) {
@@ -149,6 +150,7 @@ func (m MapStr) CopyFieldsTo(to MapStr, key string) error {
 
 // Clone returns a copy of the MapStr. It recursively makes copies of inner
 // maps.
+// 浅拷贝,所有子map都转换为MapStr类型
 func (m MapStr) Clone() MapStr {
 	result := MapStr{}
 
@@ -200,7 +202,7 @@ func (m MapStr) Put(key string, value interface{}) (interface{}, error) {
 	return old, nil
 }
 
-// StringToPrint returns the MapStr as pretty JSON.
+// StringToPrint returns the MapStr as pretty JSON.(格式化json)
 func (m MapStr) StringToPrint() string {
 	json, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
@@ -209,7 +211,7 @@ func (m MapStr) StringToPrint() string {
 	return string(json)
 }
 
-// String returns the MapStr as JSON.
+// String returns the MapStr as JSON.(普通json)
 func (m MapStr) String() string {
 	bytes, err := json.Marshal(m)
 	if err != nil {
@@ -270,6 +272,7 @@ func (m MapStr) Flatten() MapStr {
 	return flatten("", m, MapStr{})
 }
 
+// v为list类型怎么处理 ???
 // flatten is a helper for Flatten. See docs for Flatten. For convenience the
 // out parameter is returned.
 func flatten(prefix string, in, out MapStr) MapStr {
@@ -411,6 +414,7 @@ func AddTagsWithKey(ms MapStr, key string, tags []string) error {
 	return nil
 }
 
+// 转换为MapStr类型
 // toMapStr performs a type assertion on v and returns a MapStr. v can be either
 // a MapStr or a map[string]interface{}. If it's any other type or nil then
 // an error is returned.
@@ -422,6 +426,7 @@ func toMapStr(v interface{}) (MapStr, error) {
 	return m, nil
 }
 
+// 尝试转换为MapStr
 func tryToMapStr(v interface{}) (MapStr, bool) {
 	switch m := v.(type) {
 	case MapStr:

@@ -76,15 +76,25 @@
 
 # channel
 # b channel.(*pipelineConnector).ConnectWith
-b channel.(*outlet).OnEvent
+# b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
 
+# beater
 # b channel/util.go:45
 # b acker.(*trackingACKer).AddEvent
+# b beater.newRegistrarLogger
+# b beater/acker.go:60
+# b registrar.(*Registrar).Run
+# b registrar.(*Registrar).onEvents
+# b registrar.(*Registrar).commitStateUpdates
+# b memlog.(*store).Checkpoint
+# b memlog.(*store).logOperation
+# b memlog.(*diskstore).LogOperation
+# b memlog.(*diskstore).WriteCheckpoint
+# b memlog.(*diskstore).tryOpenLog
+# b memlog.New
 # b logp/logger.go:53
-
-# b memqueue.(*directEventLoop).handleInsert
 
 # pipeline
 # b pipeline.makeClientWorker
@@ -99,7 +109,12 @@ b channel.(*outlet).OnEvent
 # b compat.(composeFactory).CheckConfig
 
 # memqueue
+# b memqueue.NewQueue
 # b memqueue.(*consumer).Get
+# b memqueue.(*ackLoop).handleBatchSig
+# b memqueue.(*directEventLoop).handleInsert
+b pipeline.(*waitCloser).inc
+b pipeline.(*pipelineEventer).OnACK
 
 # clearall
 
