@@ -95,6 +95,12 @@
 # b memlog.(*diskstore).tryOpenLog
 # b memlog.New
 # b logp/logger.go:53
+# b beater.(*registrarLogger).Published
+# b beater.(*finishedLogger).Published
+# b pipeline.(*client).onPublished
+b pipeline.(*clientCloseWaiter).AddEvent
+b pipeline.newClientCloseWaiter
+# b pipeline.(*client).Publish
 
 # pipeline
 # b pipeline.makeClientWorker
@@ -112,9 +118,11 @@
 # b memqueue.NewQueue
 # b memqueue.(*consumer).Get
 # b memqueue.(*ackLoop).handleBatchSig
-# b memqueue.(*directEventLoop).handleInsert
-b pipeline.(*waitCloser).inc
-b pipeline.(*pipelineEventer).OnACK
+# b memqueue.(*bufferingEventLoop).handleInsert
+# b memqueue.(*bufferingEventLoop).processACK
+# b pipeline.(*waitCloser).inc
+# b pipeline.(*pipelineEventer).OnACK
+# b eventloop.go:548
 
 # clearall
 

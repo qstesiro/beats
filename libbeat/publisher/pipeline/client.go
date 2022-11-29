@@ -34,6 +34,7 @@ import (
 // TODO: All ackers currently drop any late incoming ACK. Some beats still might
 //       be interested in handling/waiting for event ACKs more globally
 //       -> add support for not dropping pending ACKs
+// 实现libbeat/beat.Client接口
 type client struct {
 	pipeline   *Pipeline
 	processors beat.Processor
@@ -155,10 +156,12 @@ func (c *client) Close() error {
 		c.isOpen.Store(false)
 		c.onClosing()
 
+		log.Info("--------------------------- client.Close enter") // for debug ???
 		log.Debug("client: closing acker")
 		c.waiter.signalClose()
 		c.waiter.wait()
 
+		log.Info("--------------------------- client.Close leave") // for debug ???
 		c.acker.Close()
 		log.Debug("client: done closing acker")
 
@@ -175,6 +178,7 @@ func (c *client) Close() error {
 			log.Debug("client: done closing processors")
 		}
 	})
+
 	return nil
 }
 
@@ -203,6 +207,7 @@ func (c *client) logger() *logp.Logger {
 func (c *client) onClosing() {
 	c.pipeline.observer.clientClosing()
 	if c.eventer != nil {
+		c.logger().Infof("------------------------ client.onClosing") // for debug ???
 		c.eventer.Closing()
 	}
 }
@@ -210,6 +215,7 @@ func (c *client) onClosing() {
 func (c *client) onClosed() {
 	c.pipeline.observer.clientClosed()
 	if c.eventer != nil {
+		c.logger().Infof("------------------------ client.onClosed") // for debug ???
 		c.eventer.Closed()
 	}
 }
@@ -221,6 +227,7 @@ func (c *client) onNewEvent() {
 func (c *client) onPublished() {
 	c.pipeline.observer.publishedEvent()
 	if c.eventer != nil {
+		// c.logger().Infof("------------------------ client.Published") // for debug ???
 		c.eventer.Published()
 	}
 }
@@ -264,7 +271,7 @@ func (w *clientCloseWaiter) ACKEvents(n int) {
 	if value != 0 {
 		return
 	}
-
+	logp.Info("------------------------ clientCloseWaiter.ACKEvents") // for debug ???
 	// send done signal, if close is waiting
 	if w.closing.Load() {
 		w.signalAll <- struct{}{}

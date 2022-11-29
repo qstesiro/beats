@@ -6,6 +6,8 @@
     # k8s
     # export KUBECONFIG=~/.kube/config
     alias dlv='gob && dlv exec ./filebeat --init .dbg/filebeat.dlv -- -e -c ./k8s-beat.yml'
+
+    ./filebeat -e -c ./filebeat.yml
 }
 
 # 日志文件

@@ -117,8 +117,8 @@ func (c *console) Publish(_ context.Context, batch publisher.Batch) error {
 	}
 
 	c.writer.Flush()
-	batch.ACK()
-
+	batch.ACK() // 产生实际回调并更新文件状态
+	// 普通stats计数
 	st.Dropped(dropped)
 	st.Acked(len(events) - dropped)
 

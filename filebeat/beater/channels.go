@@ -27,11 +27,15 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher/pipetool"
 )
 
+// 实现filebeat/registrar.successLogger接口
+// 实现filebeat/beater.statefulLogger接口
 type registrarLogger struct {
 	done chan struct{}
 	ch   chan<- []file.State
 }
 
+// 实现filebeat/registrar.successLogger接口
+// 实现filebeat/beater.statelessLogger接口
 type finishedLogger struct {
 	wg *eventCounter
 }
@@ -47,6 +51,7 @@ type eventCounter struct {
 // published, dropped or ACKed. The countingClient can be used to keep track of
 // inflight events for a beat.Client instance. The counter is updated after the
 // client has been disconnected from the publisher pipeline via 'Closed'.
+// 实现libbeat/beat.Client接口
 type countingClient struct {
 	counter *eventCounter
 	client  beat.Client

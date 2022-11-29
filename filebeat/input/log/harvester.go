@@ -352,7 +352,7 @@ func (h *Harvester) Run() error {
 		state := h.getState()
 		startingOffset := state.Offset
 		state.Offset += int64(message.Bytes)
-		count += 1 // for debug
+		count += 1 // for debug ???
 		// Stop harvester in case of an error
 		if !h.onMessage(forwarder, state, message, startingOffset) {
 			logp.Info("-------------------- send message fail: %v, count: %d", h.state.Source, count) // for debug ???
