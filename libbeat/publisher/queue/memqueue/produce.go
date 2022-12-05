@@ -23,11 +23,13 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher/queue"
 )
 
+// 实现memqueue.Producer
 type forgetfulProducer struct {
 	broker    *broker
 	openState openState
 }
 
+// 实现memqueue.Producer
 type ackProducer struct {
 	broker       *broker
 	dropOnCancel bool

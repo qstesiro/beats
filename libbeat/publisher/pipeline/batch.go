@@ -30,6 +30,7 @@ type Batch interface {
 	reduceTTL() bool
 }
 
+// 实现pipeline.Batch
 type batch struct {
 	original queue.Batch
 	ctx      *batchContext

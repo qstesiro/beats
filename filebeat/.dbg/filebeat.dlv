@@ -79,6 +79,8 @@
 # b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
+# b channel.(ConnectorFunc).ConnectWith
+# b channel.(*pipelineConnector).ConnectWith
 
 # beater
 # b channel/util.go:45
@@ -98,15 +100,19 @@
 # b beater.(*registrarLogger).Published
 # b beater.(*finishedLogger).Published
 # b pipeline.(*client).onPublished
-b pipeline.(*clientCloseWaiter).AddEvent
-b pipeline.newClientCloseWaiter
+# b pipeline.(*clientCloseWaiter).AddEvent
+# b pipeline.newClientCloseWaiter # 未被调用
 # b pipeline.(*client).Publish
 
 # pipeline
+b pipeline.(*Pipeline).ConnectWith
+b pipeline/pipeline.go:302
 # b pipeline.makeClientWorker
 # b pipeline.newOutputController
 # b pipeline.(*outputController).Set
 # b pipeline.newEventConsumer
+# b pipeline.(*eventConsumer).loop
+# b pipeline.newBatch
 
 # console
 # b console.newConsole

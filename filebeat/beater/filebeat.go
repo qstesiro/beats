@@ -70,7 +70,7 @@ var (
 )
 
 // Filebeat is a beater object. Contains all objects needed to run the beat
-// 实现libbeat/beat.Beater接口
+// 实现libbeat/beat.Beater
 type Filebeat struct {
 	config         *cfg.Config
 	moduleRegistry *fileset.ModuleRegistry
@@ -311,6 +311,7 @@ func isElasticsearchLoads(kibanaVersion common.Version) bool {
 }
 
 // Run allows the beater to be run as a beat.
+// libbeat/beat.Beater.Run
 func (fb *Filebeat) Run(b *beat.Beat) error {
 	var err error
 	config := fb.config
@@ -512,6 +513,7 @@ func (fb *Filebeat) Run(b *beat.Beat) error {
 }
 
 // Stop is called on exit to stop the crawling, spooling and registration processes.
+// libbeat/beat.Beater.Stop
 func (fb *Filebeat) Stop() {
 	logp.Info("Stopping filebeat")
 

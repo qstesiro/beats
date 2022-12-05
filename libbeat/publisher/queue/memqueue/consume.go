@@ -26,6 +26,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher/queue"
 )
 
+// 实现libbeat/publisher/queue.Consumer
 type consumer struct {
 	broker *broker
 	resp   chan getResponse
@@ -34,6 +35,7 @@ type consumer struct {
 	closed atomic.Bool
 }
 
+// 实现libbeat/publisher/queue.Batch
 type batch struct {
 	consumer     *consumer
 	events       []publisher.Event
@@ -57,6 +59,7 @@ func newConsumer(b *broker) *consumer {
 	}
 }
 
+// libbeat/publisher/queue.Batch.Get
 func (c *consumer) Get(sz int) (queue.Batch, error) {
 	if c.closed.Load() {
 		return nil, io.EOF
@@ -78,6 +81,7 @@ func (c *consumer) Get(sz int) (queue.Batch, error) {
 	}, nil
 }
 
+// libbeat/publisher/queue.Batch.Close
 func (c *consumer) Close() error {
 	if c.closed.Swap(true) {
 		return errors.New("already closed")
@@ -87,6 +91,7 @@ func (c *consumer) Close() error {
 	return nil
 }
 
+// libbeat/publisher/queue.Batch.Events
 func (b *batch) Events() []publisher.Event {
 	if b.state != batchActive {
 		panic("Get Events from inactive batch")
@@ -94,6 +99,7 @@ func (b *batch) Events() []publisher.Event {
 	return b.events
 }
 
+// libbeat/publisher/queue.Batch.ACK
 func (b *batch) ACK() {
 	if b.state != batchActive {
 		switch b.state {

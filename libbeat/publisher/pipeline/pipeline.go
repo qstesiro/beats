@@ -53,6 +53,7 @@ import (
 //
 // For client connecting to this pipeline, the default PublishMode is
 // OutputChooses.
+// 实现beat.Pipeline
 type Pipeline struct {
 	beatInfo beat.Info
 

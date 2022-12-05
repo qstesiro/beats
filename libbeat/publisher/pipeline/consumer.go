@@ -186,7 +186,7 @@ func (c *eventConsumer) loop(consumer queue.Consumer) {
 				continue
 			}
 			if queueBatch != nil {
-				batch = newBatch(c.ctx, queueBatch, c.out.timeToLive)
+				batch = newBatch(c.ctx, queueBatch, c.out.timeToLive) // 创建pipeline.batch
 			}
 
 			paused = c.paused()

@@ -34,7 +34,7 @@ import (
 // TODO: All ackers currently drop any late incoming ACK. Some beats still might
 //       be interested in handling/waiting for event ACKs more globally
 //       -> add support for not dropping pending ACKs
-// 实现libbeat/beat.Client接口
+// 实现libbeat/beat.Client
 type client struct {
 	pipeline   *Pipeline
 	processors beat.Processor
@@ -65,6 +65,7 @@ type clientCloseWaiter struct {
 	waitClose  time.Duration
 }
 
+// libbeat/beat.Client.PublishAll
 func (c *client) PublishAll(events []beat.Event) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -74,6 +75,7 @@ func (c *client) PublishAll(events []beat.Event) {
 	}
 }
 
+// libbeat/beat.Client.Publish
 func (c *client) Publish(e beat.Event) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -145,6 +147,7 @@ func (c *client) publish(e beat.Event) {
 	}
 }
 
+// libbeat/beat.Client.Close
 func (c *client) Close() error {
 	log := c.logger()
 

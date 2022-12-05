@@ -34,6 +34,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher"
 )
 
+// 实现libbeat/outputs.Client
 type console struct {
 	log      *logp.Logger
 	out      *os.File
@@ -102,7 +103,11 @@ func newConsole(index string, observer outputs.Observer, codec codec.Codec) (*co
 	return c, nil
 }
 
+// libbeat/outputs.Client.Close
 func (c *console) Close() error { return nil }
+
+// libbeat/outputs.Client.Publish
+// 实际pipeline.batch参数
 func (c *console) Publish(_ context.Context, batch publisher.Batch) error {
 	st := c.observer
 	events := batch.Events()
@@ -168,6 +173,7 @@ func (c *console) writeBuffer(buf []byte) error {
 	return nil
 }
 
+// libbeat/outputs.Client.String
 func (c *console) String() string {
 	return "console"
 }
