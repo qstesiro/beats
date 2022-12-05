@@ -68,11 +68,12 @@ type Settings struct {
 type ackChan struct {
 	next         *ackChan
 	ch           chan batchAckMsg
-	seq          uint
-	start, count int // number of events waiting for ACK
+	seq          uint // 唯一id
+	start, count int  // number of events waiting for ACK
 	states       []clientState
 }
 
+// 无头链表,head指向第一个有效元素,tail指向最后一个有效元素
 type chanList struct {
 	head *ackChan
 	tail *ackChan
