@@ -73,7 +73,9 @@ type ackChan struct {
 	states       []clientState
 }
 
-// 无头链表,head指向第一个有效元素,tail指向最后一个有效元素
+// 无头链表
+// head指向第一个有效元素
+// tail指向最后一个有效元素
 type chanList struct {
 	head *ackChan
 	tail *ackChan

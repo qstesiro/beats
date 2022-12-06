@@ -62,6 +62,7 @@ func (b *batchBuffer) capacity() int {
 }
 
 func (b *batchBuffer) cancel(st *produceState) int {
+	// 清空复用
 	events := b.events[:0]
 	clients := b.clients[:0]
 

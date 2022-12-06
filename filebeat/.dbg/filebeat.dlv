@@ -105,8 +105,8 @@
 # b pipeline.(*client).Publish
 
 # pipeline
-b pipeline.(*Pipeline).ConnectWith
-b pipeline/pipeline.go:302
+# b pipeline.(*Pipeline).ConnectWith
+# b pipeline/pipeline.go:302
 # b pipeline.makeClientWorker
 # b pipeline.newOutputController
 # b pipeline.(*outputController).Set
@@ -129,6 +129,7 @@ b pipeline/pipeline.go:302
 # b pipeline.(*waitCloser).inc
 # b pipeline.(*pipelineEventer).OnACK
 # b eventloop.go:548
+b memqueue.newBufferingEventLoop
 
 # clearall
 
