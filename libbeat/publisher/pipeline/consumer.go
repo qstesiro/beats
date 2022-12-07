@@ -209,7 +209,7 @@ func (c *eventConsumer) loop(consumer queue.Consumer) {
 			if err := handleSignal(sig); err != nil {
 				return
 			}
-		case out <- batch:
+		case out <- batch: // pub-step3
 			batch = nil
 			if paused {
 				out = nil

@@ -317,20 +317,20 @@ func (l *bufferingEventLoop) run() {
 		case <-broker.done:
 			return
 
-		case req := <-l.events: // producer pushing new event
+		case req := <-l.events: // producer pushing new event. pub-step1
 			l.handleInsert(&req)
 
 		case req := <-l.pubCancel: // producer cancelling active events
 			l.handleCancel(&req)
 
-		case req := <-l.get: // consumer asking for next batch
+		case req := <-l.get: // consumer asking for next batch. pub-step2
 			l.handleConsumer(&req)
 
-		case l.schedACKS <- l.pendingACKs:
+		case l.schedACKS <- l.pendingACKs: // ack-step1
 			l.schedACKS = nil
 			l.pendingACKs = chanList{}
 
-		case count := <-l.acks:
+		case count := <-l.acks: // ack-step6
 			l.handleACK(count)
 
 		case <-l.idleC:

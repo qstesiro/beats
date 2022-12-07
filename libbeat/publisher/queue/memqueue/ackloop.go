@@ -63,10 +63,10 @@ func (l *ackLoop) run() {
 			// TODO: panic on pending batches?
 			return
 
-		case acks <- acked:
+		case acks <- acked: // ack-step5
 			acks, acked = nil, 0
 
-		case lst := <-l.broker.scheduledACKs:
+		case lst := <-l.broker.scheduledACKs: // ack-step2
 			count, events := lst.count()
 			l.lst.concat(&lst)
 
@@ -79,7 +79,7 @@ func (l *ackLoop) run() {
 			l.batchesSched += uint64(count)
 			l.totalSched += uint64(events)
 
-		case <-l.sig:
+		case <-l.sig: // ack-step4
 			acked += l.handleBatchSig()
 			if acked > 0 {
 				acks = l.broker.acks
@@ -92,7 +92,7 @@ func (l *ackLoop) run() {
 		// log.Debug("ackloop:   total batches scheduled = ", l.batchesSched)
 		// log.Debug("ackloop:   total batches ack = ", l.batchesACKed)
 
-		l.sig = l.lst.channel()
+		l.sig = l.lst.channel() // ack-step3
 		// if l.sig == nil {
 		// 	log.Debug("ackloop: no ack scheduled")
 		// } else {
