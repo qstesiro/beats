@@ -36,6 +36,7 @@ type sharedStore struct {
 // No transaction can be created once the store instance has been closed.
 // A Store is not thread-safe. Each go-routine accessing a store should create
 // an instance using `Registry.Get`.
+// implement libbeat/statestore/backend.Store
 type Store struct {
 	shared *sharedStore
 	// wait group to ensure active operations can finish, but not started anymore after the store has been closed.

@@ -35,6 +35,12 @@
 # b beater.(*crawler).startInput
 # b beater.(*Filebeat).Run
 
+# filebeat/registrar
+# b registrar.readStatesFrom
+# b registrar.(*Registrar).Run
+# b registrar.(*Registrar).onEvents
+# b registrar.(*Registrar).commitStateUpdates
+
 # input
 # b input.New
 # b input.(*Runner).Stop
@@ -74,7 +80,8 @@
 # b channel/util.go:117
 # b channel.CloseOnSignal
 
-# channel
+# filebeat/channel
+# b channel.(*OutletFactory).Create
 # b channel.(*pipelineConnector).ConnectWith
 # b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
@@ -87,15 +94,6 @@
 # b acker.(*trackingACKer).AddEvent
 # b beater.newRegistrarLogger
 # b beater/acker.go:60
-# b registrar.(*Registrar).Run
-# b registrar.(*Registrar).onEvents
-# b registrar.(*Registrar).commitStateUpdates
-# b memlog.(*store).Checkpoint
-# b memlog.(*store).logOperation
-# b memlog.(*diskstore).LogOperation
-# b memlog.(*diskstore).WriteCheckpoint
-# b memlog.(*diskstore).tryOpenLog
-# b memlog.New
 # b logp/logger.go:53
 # b beater.(*registrarLogger).Published
 # b beater.(*finishedLogger).Published
@@ -129,7 +127,17 @@
 # b pipeline.(*waitCloser).inc
 # b pipeline.(*pipelineEventer).OnACK
 # b eventloop.go:548
-b memqueue.newBufferingEventLoop
+# b memqueue.newBufferingEventLoop
+
+b memlog.openStore
+b memlog.loadDataFile
+b memlog.loadLogFile
+# b memlog.(*store).Checkpoint
+# b memlog.(*store).logOperation
+# b memlog.(*diskstore).LogOperation
+# b memlog.(*diskstore).WriteCheckpoint
+# b memlog.(*diskstore).tryOpenLog
+# b memlog.New
 
 # clearall
 

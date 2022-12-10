@@ -1,0 +1,20 @@
+{
+  "k": "filebeat::logs::native::1179883-2053",
+  "v": {
+    "offset": 792576,
+    "timestamp": [
+      2061715041536,
+      1670210470
+    ],
+    "type": "log",
+    "FileStateOS": {
+      "inode": 1179883,
+      "device": 2053
+    },
+    "identifier_name": "native",
+    "id": "native::1179883-2053",
+    "prev_id": "",
+    "source": "/home/qstesiro/github.com/qstesiro/beats/filebeat/demo-01.log",
+    "ttl": -1
+  }
+}

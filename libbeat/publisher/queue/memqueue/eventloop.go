@@ -71,6 +71,7 @@ type bufferingEventLoop struct {
 	idleC <-chan time.Time
 }
 
+// 无头列表
 type flushList struct {
 	head  *batchBuffer
 	tail  *batchBuffer
@@ -361,7 +362,7 @@ func (l *bufferingEventLoop) handleInsert(req *pushRequest) {
 			}
 		} else {
 			// 当前数据量比较小,在时钟周期内未达到minEvents
-			// 时钟被触发,执行flusheBuffer但是并未设置新buf
+			// 时钟被触发,执行flushBuffer但是并未设置新buf
 			// 后续再增加的事件会执行到此处
 			if L >= l.minEvents {
 				l.buf = newBatchBuffer(l.minEvents)

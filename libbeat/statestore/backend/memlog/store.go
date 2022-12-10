@@ -37,6 +37,7 @@ import (
 // detected by the diskstore.
 //
 // The store allows only one writer, but multiple concurrent readers.
+// implement libbeat/statestore/backend.Store
 type store struct {
 	lock sync.RWMutex
 	disk *diskstore
@@ -93,7 +94,7 @@ func openStore(log *logp.Logger, home string, mode os.FileMode, bufSz uint, igno
 		return nil, fmt.Errorf("failed to update active file permissions: %w", err)
 	}
 
-	dataFiles, err := listDataFiles(home)
+	dataFiles, err := listDataFiles(home) // 从小到大排序
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +109,9 @@ func openStore(log *logp.Logger, home string, mode os.FileMode, bufSz uint, igno
 
 	tbl := map[string]entry{}
 	var txid uint64
-	if L := len(dataFiles); L > 0 {
+	if L := len(dataFiles); L > 0 { // 倒序处理(从最近的事务开始处理)
 		active := dataFiles[L-1]
-		txid = active.txid
+		txid = active.txid // 记录最近的事务id
 		if err := loadDataFile(active.path, tbl); err != nil {
 			return nil, err
 		}

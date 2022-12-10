@@ -564,11 +564,11 @@ func loadLogFile(
 ) (logTxid uint64, entries uint, err error) {
 	err = readLogFile(home, func(rawOp op, id uint64) error {
 		// ignore old entries in case the log file truncation was not executed between a beat restart.
-		if isTxIDLessEqual(id, txid) {
+		if isTxIDLessEqual(id, txid) { // 忽略旧的日志id
 			return nil
 		}
 
-		if id != txid+1 {
+		if id != txid+1 { // 事务id必须连续
 			return errTxIDInvalid
 		}
 		txid = id

@@ -27,6 +27,7 @@ import (
 )
 
 // Registry configures access to memlog based stores.
+// implement libbeat/statestore/backend.Registry
 type Registry struct {
 	log *logp.Logger
 
