@@ -129,6 +129,7 @@
 # b eventloop.go:548
 # b memqueue.newBufferingEventLoop
 
+b memlog.New
 b memlog.openStore
 b memlog.loadDataFile
 b memlog.loadLogFile

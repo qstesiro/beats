@@ -57,8 +57,8 @@ type diskstore struct {
 	logBuf  *bufio.Writer
 
 	// internal state and metrics
-	logFileSize      uint64
-	logEntries       uint
+	logFileSize      uint64 // 操作日志文件的大小
+	logEntries       uint   // 操作日志文件中的操作项数(一个操作项由操作类型与操作值组成)
 	logInvalid       bool
 	logNeedsTruncate bool
 }
@@ -77,8 +77,8 @@ type dataFileInfo struct {
 
 // storeEntry is used to write entries to the checkpoint file only.
 type storeEntry struct {
-	Key    string        `struct:"_key"`
-	Fields common.MapStr `struct:",inline"`
+	Key    string        `struct:"_key"`    // struct ???
+	Fields common.MapStr `struct:",inline"` // ???
 }
 
 // storeMeta is read from the meta file.
@@ -95,9 +95,9 @@ type logAction struct {
 }
 
 const (
-	logFileName           = "log.json"
-	metaFileName          = "meta.json"
-	activeDataFileName    = "active.dat"
+	logFileName           = "log.json"   // 操作日志文件
+	metaFileName          = "meta.json"  // 元数据文件
+	activeDataFileName    = "active.dat" // marker文件就是用来记录最近的检查点文件(因为检查点文件名是事务id,不是确定的)
 	activeDataTmpFileName = "active.dat.new"
 	checkpointTmpFileName = "checkpoint.new"
 
@@ -252,22 +252,22 @@ func (s *diskstore) LogOperation(op op) error {
 		s.logFileSize += counting.n
 	}()
 
-	ok := false
+	ok := false // 直接使用err也可以不必使用ok
 	defer cleanup.IfNot(&ok, func() {
 		s.logInvalid = true
 	})
-
+	// 写入action
 	enc := newJSONEncoder(counting)
 	if err := enc.Encode(logAction{Op: op.name(), ID: s.nextTxID}); err != nil {
 		return err
 	}
 	writer.WriteByte('\n')
-
+	// 写入opSet/opRemove
 	if err := enc.Encode(op); err != nil {
 		return err
 	}
 	writer.WriteByte('\n')
-
+	// 落盘
 	if err := writer.Flush(); err != nil {
 		return err
 	}
@@ -303,7 +303,7 @@ func (s *diskstore) WriteCheckpoint(state map[string]entry) error {
 	// guarantees that all existing log entries are 'older' then the checkpoint
 	// file and subsequenent operations.  The first operation after a successful
 	// checkpoint will be (fileTxID + 1).
-	fileTxID := s.nextTxID
+	fileTxID := s.nextTxID // 检查点文件会占用一个事务id
 	fileName := fmt.Sprintf("%v.json", fileTxID)
 	checkpointPath := filepath.Join(s.home, fileName)
 
@@ -313,6 +313,7 @@ func (s *diskstore) WriteCheckpoint(state map[string]entry) error {
 	trySyncPath(s.home)
 
 	// clear transaction log once finished
+	// 检查点文件生成后操作日志文件的内容就不再需要了
 	s.checkpointClearLog()
 
 	// finish current on-disk transaction by increasing the txid
@@ -347,15 +348,16 @@ func (s *diskstore) checkpointTmpFile(tempfile string, states map[string]entry) 
 
 	writer := bufio.NewWriterSize(&ensureWriter{f}, s.bufferSize)
 	enc := newJSONEncoder(writer)
+	// 列表开始
 	if _, err = writer.Write([]byte{'['}); err != nil {
 		return "", err
 	}
-
+	// 列表元素
 	first := true
-	for key, entry := range states {
+	for key, entry := range states { // 直接按内存数据写入(磁盘数据与内存是保持一致的)
 		prefix := []byte(",\n")
 		if first {
-			prefix = prefix[1:]
+			prefix = prefix[1:] // 第一行不需要逗号
 			first = false
 		}
 		if _, err = writer.Write(prefix); err != nil {
@@ -370,7 +372,7 @@ func (s *diskstore) checkpointTmpFile(tempfile string, states map[string]entry) 
 			return "", err
 		}
 	}
-
+	// 列表结束
 	if _, err = writer.Write([]byte("\n]")); err != nil {
 		return "", err
 	}
