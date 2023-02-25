@@ -15,6 +15,8 @@
     while [[ 1 ]]; do
         date >> /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-01.log
         date >> /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-02.log
+        date >> /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-03.log
+        date >> /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-04.log
         sleep 2s
     done
 }
@@ -86,3 +88,17 @@ kubernetes
    at ./channel/util.go:45
 7  0x000000000046f721 in runtime.goexit
    at /home/qstesiro/.gvm/gos/go1.18.8/src/runtime/asm_amd64.s:1571
+
+interface {}(github.com/elastic/beats/v7/filebeat/input/file.State) {
+	Id: "native::1179681-2053",
+	PrevId: "",
+	Finished: false,
+	Fileinfo: io/fs.FileInfo(*os.fileStat) ...,
+	Source: "/home/qstesiro/github.com/qstesiro/beats/filebeat/demo-01.log",
+	Offset: 5504,
+	Timestamp: (*time.Time)(0xc0000ede90),
+	TTL: -1,
+	Type: "log",
+	Meta: map[string]string nil,
+	FileStateOS: (*"github.com/elastic/beats/v7/libbeat/common/file.StateOS")(0xc0000edec8),
+	IdentifierName: "native",}

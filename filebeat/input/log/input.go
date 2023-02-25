@@ -154,10 +154,10 @@ func NewInput(
 	// logp.Info("----------------- log.Harvester create dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
 	// ts = time.Now().UnixMilli()                                                                                                     // for debug ???
 	// 临时停止 ???
-	// err = p.loadStates(context.States)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	err = p.loadStates(context.States)
+	if err != nil {
+		return nil, err
+	}
 	// logp.Info("----------------- log.Input load states dura: %ds, %dms", (time.Now().UnixMilli()-ts)/1e3, time.Now().UnixMilli()-ts) // for debug ???
 	// logp.Info("----------------------- Configured paths: %v, states: %d", p.config.Paths, len(context.States))
 	// Paths[cfg] = p.config.Paths // for debug ???
@@ -282,7 +282,7 @@ func (p *Input) Run() {
 func (p *Input) cleanupStates() {
 	beforeCount := p.states.Count()
 	cleanedStates, pendingClean := p.states.Cleanup()
-	// Pending代表未来可能超时但是当前还没有超时(命名不好)
+	// Pending代表未来可能超时但是当前还没有超时(命名有歧义)
 	logp.Debug("input", "input states cleaned up. Before: %d, After: %d, Pending: %d",
 		beforeCount, beforeCount-cleanedStates, pendingClean)
 }
@@ -542,7 +542,7 @@ func (p *Input) scan() {
 		// Decides if previous state exists
 		if isNewState {
 			logp.Debug("input", "Start harvester for new file: %s", newState.Source)
-			err := p.startHarvester(newState, 0)
+			err := p.startHarvester(newState, newState.FileSeq, 0)
 			if err == errHarvesterLimit {
 				logp.Debug("input", harvesterErrMsg, newState.Source, err)
 				continue
@@ -569,7 +569,7 @@ func (p *Input) harvestExistingFile(newState file.State, oldState file.State) {
 		// This could also be an issue with force_close_older that a new harvester is started after each scan but not needed?
 		// One problem with comparing modTime is that it is in seconds, and scans can happen more then once a second
 		logp.Debug("input", "Resuming harvesting of file: %s, offset: %d, new size: %d", newState.Source, oldState.Offset, newState.Fileinfo.Size())
-		err := p.startHarvester(newState, oldState.Offset)
+		err := p.startHarvester(newState, oldState.FileSeq, oldState.Offset)
 		if err != nil {
 			logp.Err("Harvester could not be started on existing file: %s, Err: %s", newState.Source, err)
 		}
@@ -579,7 +579,7 @@ func (p *Input) harvestExistingFile(newState file.State, oldState file.State) {
 	// File size was reduced -> truncated file
 	if oldState.Finished && newState.Fileinfo.Size() < oldState.Offset {
 		logp.Debug("input", "Old file was truncated. Starting from the beginning: %s, offset: %d, new size: %d ", newState.Source, newState.Offset, newState.Fileinfo.Size())
-		err := p.startHarvester(newState, 0)
+		err := p.startHarvester(newState, newState.FileSeq, 0)
 		if err != nil {
 			logp.Err("Harvester could not be started on truncated file: %s, Err: %s", newState.Source, err)
 		}
@@ -720,7 +720,7 @@ func (p *Input) createHarvester(state file.State, onTerminate func()) (*Harveste
 
 // startHarvester starts a new harvester with the given offset
 // In case the HarvesterLimit is reached, an error is returned
-func (p *Input) startHarvester(state file.State, offset int64) error {
+func (p *Input) startHarvester(state file.State, fileSeq, offset int64) error {
 	if p.numHarvesters.Inc() > p.config.HarvesterLimit && p.config.HarvesterLimit > 0 {
 		p.numHarvesters.Dec()
 		harvesterSkipped.Add(1)
@@ -728,6 +728,7 @@ func (p *Input) startHarvester(state file.State, offset int64) error {
 	}
 	// Set state to "not" finished to indicate that a harvester is running
 	state.Finished = false
+	state.FileSeq = fileSeq
 	state.Offset = offset
 
 	// Create harvester with state

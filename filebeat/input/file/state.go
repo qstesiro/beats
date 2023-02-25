@@ -22,6 +22,8 @@ import (
 	"os"
 	"time"
 
+	"go.uber.org/atomic"
+
 	"github.com/elastic/beats/v7/libbeat/common/file"
 )
 
@@ -32,6 +34,7 @@ type State struct {
 	Finished       bool              `json:"-" struct:"-"` // harvester state
 	Fileinfo       os.FileInfo       `json:"-" struct:"-"` // the file info
 	Source         string            `json:"source" struct:"source"`
+	FileSeq        int64             `json:"fileSeq" struct:"fileSeq"`
 	Offset         int64             `json:"offset" struct:"offset"`
 	Timestamp      time.Time         `json:"timestamp" struct:"timestamp"`
 	TTL            time.Duration     `json:"ttl" struct:"ttl"`
@@ -40,6 +43,8 @@ type State struct {
 	FileStateOS    file.StateOS      `json:"FileStateOS" struct:"FileStateOS"`
 	IdentifierName string            `json:"identifier_name" struct:"identifier_name"`
 }
+
+var fileSeq = atomic.NewInt64(time.Now().Unix())
 
 // NewState creates a new file state
 func NewState(fileInfo os.FileInfo, path string, t string, meta map[string]string, identifier StateIdentifier) State {
@@ -50,6 +55,7 @@ func NewState(fileInfo os.FileInfo, path string, t string, meta map[string]strin
 	s := State{
 		Fileinfo:    fileInfo,
 		Source:      path,
+		FileSeq:     fileSeq.Add(1),
 		Finished:    false,
 		FileStateOS: file.GetOSState(fileInfo),
 		Timestamp:   time.Now(),

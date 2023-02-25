@@ -331,15 +331,15 @@ func (h *Harvester) Run() error {
 				h.state.Offset = 0
 				filesTruncated.Add(1)
 			case ErrRemoved:
-				logp.Info("File was removed: %s. Closing because close_removed is enabled.", h.state.Source)
+				logp.Info("File was removed: %s. Closing because close_removed is enabled.", h.state.Source) // hit ???
 			case ErrRenamed:
 				logp.Info("File was renamed: %s. Closing because close_renamed is enabled.", h.state.Source)
 			case ErrClosed:
 				logp.Info("Reader was closed: %s. Closing.", h.state.Source)
 			case io.EOF:
-				logp.Info("End of file reached: %s. Closing because close_eof is enabled.", h.state.Source)
+				logp.Info("End of file reached: %s. Closing because close_eof is enabled.", h.state.Source) // hit ???
 			case ErrInactive:
-				logp.Info("File is inactive: %s. Closing because close_inactive of %v reached.", h.state.Source, h.config.CloseInactive)
+				logp.Info("File is inactive: %s. Closing because close_inactive of %v reached.", h.state.Source, h.config.CloseInactive) // hit ???
 			default:
 				logp.Err("Read line error: %v; File: %v", err, h.state.Source)
 			}
@@ -434,7 +434,8 @@ func (h *Harvester) onMessage(
 
 	fields := common.MapStr{
 		"log": common.MapStr{
-			"offset": messageOffset, // Offset here is the offset before the starting char.
+			"fileSeq": state.FileSeq,
+			"offset":  messageOffset, // Offset here is the offset before the starting char.
 			"file": common.MapStr{
 				"path": state.Source,
 			},

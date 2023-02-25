@@ -51,7 +51,7 @@ type eventCounter struct {
 // published, dropped or ACKed. The countingClient can be used to keep track of
 // inflight events for a beat.Client instance. The counter is updated after the
 // client has been disconnected from the publisher pipeline via 'Closed'.
-// 实现libbeat/beat.Client
+// implement libbeat/beat.Client
 type countingClient struct {
 	counter *eventCounter
 	client  beat.Client

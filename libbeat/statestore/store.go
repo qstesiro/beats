@@ -115,7 +115,7 @@ func (s *Store) Set(key string, from interface{}) error {
 		return &ErrorClosed{operation: operation, name: s.shared.name}
 	}
 	defer s.active.Done()
-
+	// Set((key))有什么特殊含义 ???
 	if err := s.shared.backend.Set((key), from); err != nil {
 		return &ErrorOperation{name: s.shared.name, operation: operation, cause: err}
 	}
@@ -132,7 +132,7 @@ func (s *Store) Remove(key string) error {
 		return &ErrorClosed{operation: operation, name: s.shared.name}
 	}
 	defer s.active.Done()
-
+	// Remove((key))有什么特殊含义 ???
 	if err := s.shared.backend.Remove((key)); err != nil {
 		return &ErrorOperation{name: s.shared.name, operation: operation, cause: err}
 	}

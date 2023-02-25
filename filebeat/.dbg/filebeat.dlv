@@ -27,13 +27,15 @@
 # b kubernetes.(*pod).OnDelete
 # b kubernetes/pod.go:319
 
-# filebeat
+# filebeat/beater
 # b beater.newBeater
 # b beater.newCrawler
 # b beater.(*crawler).Start
 # b beater.(*crawler).Stop
 # b beater.(*crawler).startInput
 # b beater.(*Filebeat).Run
+# b beater.(*filebeatStore).Access
+# b beater.(*registrarLogger).Published
 
 # filebeat/registrar
 # b registrar.readStatesFrom
@@ -48,6 +50,10 @@
 # b input.NewRunnerFactory
 # b input.(*RunnerFactory).Create
 
+# input/file
+# b input/file.NewState
+# b input/file.(*States).FindPrevious
+
 # input/container
 # b container.NewInput
 
@@ -60,6 +66,7 @@
 # b log.subOutletWrap
 # b log/input.go:679
 # b log.(*Input).loadStates
+# b log.getFileState
 
 # b input/input.go:136
 # b log/input.go:233
@@ -116,6 +123,9 @@
 # b console.newConsole
 # b console.Publish
 
+# codec.json
+# b codec/json.makeEvent
+
 # b compat.(composeFactory).CheckConfig
 
 # memqueue
@@ -129,10 +139,12 @@
 # b eventloop.go:548
 # b memqueue.newBufferingEventLoop
 
-b memlog.New
-b memlog.openStore
-b memlog.loadDataFile
-b memlog.loadLogFile
+# b statestore.(*Store).Remove
+
+# b memlog.New
+# b memlog.openStore
+# b memlog.loadDataFile
+# b memlog.loadLogFile
 # b memlog.(*store).Checkpoint
 # b memlog.(*store).logOperation
 # b memlog.(*diskstore).LogOperation

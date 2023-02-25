@@ -18,3 +18,36 @@
     "ttl": -1
   }
 }
+
+{
+  "@timestamp": "2023-02-25T13:02:20.031Z",
+  "@metadata": {
+    "beat": "filebeat",
+    "type": "_doc",
+    "version": "7.13.5"
+  },
+  "message": "2023年 02月 25日 星期六 21:02:11 CST",
+  "log": {
+    "offset": 1806,
+    "file": {
+      "path": "/home/qstesiro/github.com/qstesiro/beats/filebeat/demo-03.log"
+    }
+  },
+  "input": {
+    "type": "log"
+  },
+  "ecs": {
+    "version": "1.8.0"
+  },
+  "host": {
+    "name": "vbox"
+  },
+  "agent": {
+    "version": "7.13.5",
+    "hostname": "vbox",
+    "ephemeral_id": "ba444d68-4f6e-423c-b5e6-5f89c8cd6fd7",
+    "id": "cf89709f-321f-4486-b680-11ea1113f769",
+    "name": "vbox",
+    "type": "filebeat"
+  }
+}

@@ -28,6 +28,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/statestore/backend/memlog"
 )
 
+// implement filebeat/registrar.StateStore
 type filebeatStore struct {
 	registry      *statestore.Registry
 	storeName     string
