@@ -34,6 +34,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/logp"
 )
 
+// 实现libbeat/common/kubernetes.ResourceEventHandler接口
 type pod struct {
 	uuid             uuid.UUID
 	config           *Config
