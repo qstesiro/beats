@@ -34,9 +34,10 @@ package kubernetes
 //
 // TODO: allow the On* methods to return an error so that the RateLimited WorkQueue
 // TODO: can requeue the failed event processing.
-// 实例类型
-// libbeat/autodiscover/providers/kubernetes/pod
-// libbeat/autodiscover/providers/kubernetes/node
+// @extended libbeat/autodiscover/providers/kubernetes.Eventer
+// @implemented libbeat/common/kubernetes.ResourceEventHandlerFuncs
+// @implemented libbeat/common/kubernetes.NoOpEventHandlerFuncs
+// @implemented libbeat/common/kubernetes.FilteringResourceEventHandler
 type ResourceEventHandler interface {
 	OnAdd(obj interface{})
 	OnUpdate(obj interface{})
@@ -46,6 +47,7 @@ type ResourceEventHandler interface {
 // ResourceEventHandlerFuncs is an adaptor to let you easily specify as many or
 // as few of the notification functions as you want while still implementing
 // ResourceEventHandler.
+// @implement libbeat/common/kubernetes.ResourceEventHandler
 type ResourceEventHandlerFuncs struct {
 	AddFunc    func(obj interface{})
 	UpdateFunc func(obj interface{})
@@ -53,6 +55,7 @@ type ResourceEventHandlerFuncs struct {
 }
 
 // OnAdd calls AddFunc if it's not nil.
+// @implement
 func (r ResourceEventHandlerFuncs) OnAdd(obj interface{}) {
 	if r.AddFunc != nil {
 		r.AddFunc(obj)
@@ -60,6 +63,7 @@ func (r ResourceEventHandlerFuncs) OnAdd(obj interface{}) {
 }
 
 // OnUpdate calls UpdateFunc if it's not nil.
+// @implement
 func (r ResourceEventHandlerFuncs) OnUpdate(obj interface{}) {
 	if r.UpdateFunc != nil {
 		r.UpdateFunc(obj)
@@ -67,6 +71,7 @@ func (r ResourceEventHandlerFuncs) OnUpdate(obj interface{}) {
 }
 
 // OnDelete calls DeleteFunc if it's not nil.
+// @implement
 func (r ResourceEventHandlerFuncs) OnDelete(obj interface{}) {
 	if r.DeleteFunc != nil {
 		r.DeleteFunc(obj)
@@ -74,20 +79,24 @@ func (r ResourceEventHandlerFuncs) OnDelete(obj interface{}) {
 }
 
 // NoOpEventHandlerFuncs ensures that watcher reconciliation can happen even without the required funcs
+// @implement libbeat/common/kubernetes.ResourceEventHandler
 type NoOpEventHandlerFuncs struct {
 }
 
 // OnAdd does a no-op on an add event
+// @implement
 func (n NoOpEventHandlerFuncs) OnAdd(obj interface{}) {
 
 }
 
 // OnUpdate does a no-op on an update event
+// @implement
 func (n NoOpEventHandlerFuncs) OnUpdate(obj interface{}) {
 
 }
 
 // OnDelete does a no-op on a delete event
+// @implement
 func (n NoOpEventHandlerFuncs) OnDelete(obj interface{}) {
 
 }
@@ -96,12 +105,14 @@ func (n NoOpEventHandlerFuncs) OnDelete(obj interface{}) {
 // in, ensuring the appropriate nested handler method is invoked. An object
 // that starts passing the filter after an update is considered an add, and an
 // object that stops passing the filter after an update is considered a delete.
+// @implement libbeat/common/kubernetes.ResourceEventHandler
 type FilteringResourceEventHandler struct {
 	FilterFunc func(obj interface{}) bool
 	Handler    ResourceEventHandler
 }
 
 // OnAdd calls the nested handler only if the filter succeeds
+// @implement
 func (r FilteringResourceEventHandler) OnAdd(obj interface{}) {
 	if !r.FilterFunc(obj) {
 		return
@@ -110,6 +121,7 @@ func (r FilteringResourceEventHandler) OnAdd(obj interface{}) {
 }
 
 // OnUpdate ensures the proper handler is called depending on whether the filter matches
+// @implement
 func (r FilteringResourceEventHandler) OnUpdate(obj interface{}) {
 	if !r.FilterFunc(obj) {
 		return
@@ -118,6 +130,7 @@ func (r FilteringResourceEventHandler) OnUpdate(obj interface{}) {
 }
 
 // OnDelete calls the nested handler only if the filter succeeds
+// @implement
 func (r FilteringResourceEventHandler) OnDelete(obj interface{}) {
 	if !r.FilterFunc(obj) {
 		return

@@ -82,12 +82,13 @@ type item struct {
 	state     string
 }
 
+// @implement libeat/common/kubernetes.Watcher
 type watcher struct {
 	client   kubernetes.Interface
 	informer cache.SharedInformer
 	store    cache.Store
-	queue    workqueue.Interface
-	ctx      context.Context
+	queue    workqueue.Interface // 用于缓冲watch到的事件,大小可自增
+	ctx      context.Context     // 不是最佳实践 ???
 	stop     context.CancelFunc
 	handler  ResourceEventHandler
 	logger   *logp.Logger
@@ -129,7 +130,7 @@ func NewWatcher(client kubernetes.Interface, resource Resource, opts WatchOption
 		ctx:      ctx,
 		stop:     cancel,
 		logger:   logp.NewLogger("kubernetes"),
-		handler:  NoOpEventHandlerFuncs{},
+		handler:  NoOpEventHandlerFuncs{}, // 默认空处理器
 	}
 
 	w.informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -159,21 +160,25 @@ func NewWatcher(client kubernetes.Interface, resource Resource, opts WatchOption
 }
 
 // AddEventHandler adds a resource handler to process each request that is coming into the watcher
+// @implement
 func (w *watcher) AddEventHandler(h ResourceEventHandler) {
 	w.handler = h
 }
 
 // Store returns the store object for the resource that is being watched
+// @implement
 func (w *watcher) Store() cache.Store {
 	return w.store
 }
 
 // Client returns the kubernetes client object used by the watcher
+// @implement
 func (w *watcher) Client() kubernetes.Interface {
 	return w.client
 }
 
 // Start watching pods
+// @implement
 func (w *watcher) Start() error {
 	go w.informer.Run(w.ctx.Done())
 
@@ -194,6 +199,7 @@ func (w *watcher) Start() error {
 	return nil
 }
 
+// @implement
 func (w *watcher) Stop() {
 	w.queue.ShutDown()
 	w.stop()

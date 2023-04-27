@@ -35,7 +35,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/logp"
 )
 
-// 实现libbeat/common/kubernetes.ResourceEventHandler接口
+// @implement libbeat/autodiscover/providers/kubernetes.Eventer
 type node struct {
 	uuid    uuid.UUID
 	config  *Config
@@ -90,12 +90,14 @@ func NewNodeEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface, pu
 }
 
 // OnAdd ensures processing of node objects that are newly created
+// @implement
 func (n *node) OnAdd(obj interface{}) {
 	n.logger.Debugf("Watcher Node add: %+v", obj)
 	n.emit(obj.(*kubernetes.Node), "start")
 }
 
 // OnUpdate ensures processing of node objects that are updated
+// @implement
 func (n *node) OnUpdate(obj interface{}) {
 	node := obj.(*kubernetes.Node)
 	if node.GetObjectMeta().GetDeletionTimestamp() != nil {
@@ -113,12 +115,14 @@ func (n *node) OnUpdate(obj interface{}) {
 }
 
 // OnDelete ensures processing of node objects that are deleted
+// @implement
 func (n *node) OnDelete(obj interface{}) {
 	n.logger.Debugf("Watcher Node delete: %+v", obj)
 	time.AfterFunc(n.config.CleanupTimeout, func() { n.emit(obj.(*kubernetes.Node), "stop") })
 }
 
 // GenerateHints creates hints needed for hints builder
+// @implement
 func (n *node) GenerateHints(event bus.Event) bus.Event {
 	// Try to build a config with enabled builders. Send a provider agnostic payload.
 	// Builders are Beat specific.
@@ -153,11 +157,13 @@ func (n *node) GenerateHints(event bus.Event) bus.Event {
 }
 
 // Start starts the eventer
+// @implement
 func (n *node) Start() error {
 	return n.watcher.Start()
 }
 
 // Stop stops the eventer
+// @implement
 func (n *node) Stop() {
 	n.watcher.Stop()
 }

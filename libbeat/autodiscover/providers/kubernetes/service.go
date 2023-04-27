@@ -33,6 +33,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/logp"
 )
 
+// @implement libbeat/autodiscover/providers/kubernetes.Eventer
 type service struct {
 	uuid             uuid.UUID
 	config           *Config
@@ -92,12 +93,14 @@ func NewServiceEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface,
 }
 
 // OnAdd ensures processing of service objects that are newly created
+// @implement
 func (s *service) OnAdd(obj interface{}) {
 	s.logger.Debugf("Watcher service add: %+v", obj)
 	s.emit(obj.(*kubernetes.Service), "start")
 }
 
 // OnUpdate ensures processing of service objects that are updated
+// @implement
 func (s *service) OnUpdate(obj interface{}) {
 	svc := obj.(*kubernetes.Service)
 	// Once service is in terminated state, mark it for deletion
@@ -111,12 +114,14 @@ func (s *service) OnUpdate(obj interface{}) {
 }
 
 // OnDelete ensures processing of service objects that are deleted
+// @implement
 func (s *service) OnDelete(obj interface{}) {
 	s.logger.Debugf("Watcher service delete: %+v", obj)
 	time.AfterFunc(s.config.CleanupTimeout, func() { s.emit(obj.(*kubernetes.Service), "stop") })
 }
 
 // GenerateHints creates hints needed for hints builder
+// @implement
 func (s *service) GenerateHints(event bus.Event) bus.Event {
 	// Try to build a config with enabled builders. Send a provider agnostic payload.
 	// Builders are Beat specific.
@@ -164,6 +169,7 @@ func (s *service) GenerateHints(event bus.Event) bus.Event {
 }
 
 // Start starts the eventer
+// @implement
 func (s *service) Start() error {
 	if s.namespaceWatcher != nil {
 		if err := s.namespaceWatcher.Start(); err != nil {
@@ -174,6 +180,7 @@ func (s *service) Start() error {
 }
 
 // Stop stops the eventer
+// @implement
 func (s *service) Stop() {
 	s.watcher.Stop()
 

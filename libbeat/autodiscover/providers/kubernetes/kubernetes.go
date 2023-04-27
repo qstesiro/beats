@@ -48,6 +48,10 @@ func init() {
 }
 
 // Eventer allows defining ways in which kubernetes resource events are observed and processed
+// 继承libbeat/common/kubernetes.ResourceEventHandler接口
+// 子类型
+// libbeat/autodiscover/providers/kubernetes.pod
+// libbeat/autodiscover/providers/kubernetes.node
 type Eventer interface {
 	kubernetes.ResourceEventHandler
 	GenerateHints(event bus.Event) bus.Event

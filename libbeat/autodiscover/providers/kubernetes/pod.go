@@ -34,7 +34,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/logp"
 )
 
-// 实现libbeat/common/kubernetes.ResourceEventHandler接口
+// @implement libbeat/autodiscover/providers/kubernetes.Eventer
 type pod struct {
 	uuid             uuid.UUID
 	config           *Config
@@ -96,10 +96,12 @@ func NewPodEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface, pub
 	if metaConf == nil {
 		metaConf = metadata.GetDefaultResourceMetadataConfig()
 	}
+	// nodeWatcher内部使用空NoOpEventHandlerFuncs,有什么意义,不明白 ???
 	nodeWatcher, err := kubernetes.NewWatcher(client, &kubernetes.Node{}, options, nil)
 	if err != nil {
 		logger.Errorf("couldn't create watcher for %T due to error %+v", &kubernetes.Node{}, err)
 	}
+	// namespaceWatcher内部可能使用空NoOpEventHandlerFuncs
 	namespaceWatcher, err := kubernetes.NewWatcher(client, &kubernetes.Namespace{}, kubernetes.WatchOptions{
 		SyncTimeout: config.SyncPeriod,
 	}, nil)
@@ -123,13 +125,14 @@ func NewPodEventer(uuid uuid.UUID, cfg *common.Config, client k8s.Interface, pub
 
 	if namespaceWatcher != nil && (config.Hints.Enabled() || metaConf.Namespace.Enabled()) {
 		updater := newNamespacePodUpdater(p.unlockedUpdate, watcher.Store(), &p.crossUpdate)
-		namespaceWatcher.AddEventHandler(updater)
+		namespaceWatcher.AddEventHandler(updater) // 设置处理器
 	}
 
 	return p, nil
 }
 
 // OnAdd ensures processing of pod objects that are newly added.
+// @implement
 func (p *pod) OnAdd(obj interface{}) {
 	p.crossUpdate.RLock()
 	defer p.crossUpdate.RUnlock()
@@ -140,6 +143,7 @@ func (p *pod) OnAdd(obj interface{}) {
 }
 
 // OnUpdate handles events for pods that have been updated.
+// @implement
 func (p *pod) OnUpdate(obj interface{}) {
 	p.crossUpdate.RLock()
 	defer p.crossUpdate.RUnlock()
@@ -157,6 +161,7 @@ func (p *pod) unlockedUpdate(obj interface{}) {
 }
 
 // OnDelete stops pod objects that are deleted.
+// @implement
 func (p *pod) OnDelete(obj interface{}) {
 	p.crossUpdate.RLock()
 	defer p.crossUpdate.RUnlock()
@@ -167,6 +172,7 @@ func (p *pod) OnDelete(obj interface{}) {
 }
 
 // GenerateHints creates hints needed for hints builder.
+// @implement
 func (p *pod) GenerateHints(event bus.Event) bus.Event {
 	// Try to build a config with enabled builders. Send a provider agnostic payload.
 	// Builders are Beat specific.
@@ -227,6 +233,7 @@ func (p *pod) GenerateHints(event bus.Event) bus.Event {
 }
 
 // Start starts the eventer
+// @implement
 func (p *pod) Start() error {
 	if p.nodeWatcher != nil {
 		err := p.nodeWatcher.Start()
@@ -245,6 +252,7 @@ func (p *pod) Start() error {
 }
 
 // Stop stops the eventer
+// @implement
 func (p *pod) Stop() {
 	p.watcher.Stop()
 
