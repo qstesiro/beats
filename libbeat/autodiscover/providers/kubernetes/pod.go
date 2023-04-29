@@ -320,7 +320,7 @@ func getContainersInPod(pod *kubernetes.Pod) []*containerInPod {
 // period defined in `CleanupTimeout`.
 // Network information is only included in events for running containers
 // and for pods with at least one running container.
-func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数 for debug ???
+func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数我添加的 for debug ???
 	annotations := podAnnotations(pod)
 	namespaceAnnotations := podNamespaceAnnotations(pod, p.namespaceWatcher)
 

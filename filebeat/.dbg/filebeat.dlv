@@ -20,8 +20,9 @@
 
 # b cfgfile.(*RunnerList).Reload
 
+# libbeat/autodiscover/providers/kubernetes
 # b kubernetes.AutodiscoverBuilder
-# b kubernetes.NewPodEventer
+b kubernetes.NewPodEventer
 # b kubernetes.(*pod).OnAdd
 # b kubernetes.(*pod).OnUpdate
 # b kubernetes.(*pod).OnDelete
