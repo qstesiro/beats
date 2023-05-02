@@ -320,6 +320,8 @@ func getContainersInPod(pod *kubernetes.Pod) []*containerInPod {
 // period defined in `CleanupTimeout`.
 // Network information is only included in events for running containers
 // and for pods with at least one running container.
+// flag=start 如果容器id为空会不会有任何事件被发布
+// flag=stop 必定有事件被发布
 func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数我添加的 for debug ???
 	annotations := podAnnotations(pod)
 	namespaceAnnotations := podNamespaceAnnotations(pod, p.namespaceWatcher)
@@ -344,7 +346,8 @@ func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数我添加�
 		if c.status.State.Running != nil {
 			anyContainerRunning = true
 		}
-
+		// 容器没有id的情况下start动作不会生成事件
+		// 也就没有事件被发布出来
 		events, ports := p.containerPodEvents(flag, pod, c, annotations, namespaceAnnotations)
 		if len(events) != 0 {
 			eventList = append(eventList, events)
@@ -372,12 +375,14 @@ func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数我添加�
 // If the container ID is unkown, only "stop" events are generated.
 // It also returns a map with the named ports.
 func (p *pod) containerPodEvents(flag string, pod *kubernetes.Pod, c *containerInPod, annotations, namespaceAnnotations common.MapStr) ([]bus.Event, common.MapStr) {
+	// 没有id的情况下start动作不会生成事件
 	if c.id == "" && flag != "stop" {
 		return nil, nil
 	}
 
 	// This must be an id that doesn't depend on the state of the container
 	// so it works also on `stop` if containers have been already deleted.
+	// 例: 217d4838-94d2-4841-a211-7870c1486c46.script
 	eventID := fmt.Sprintf("%s.%s", pod.GetObjectMeta().GetUID(), c.spec.Name)
 
 	meta := p.metagen.Generate(pod, metadata.WithFields("container.name", c.spec.Name))
@@ -408,6 +413,7 @@ func (p *pod) containerPodEvents(flag string, pod *kubernetes.Pod, c *containerI
 		// Ensure that at least one event is generated for this container.
 		// Set port to zero to signify that the event is from a container
 		// and not from a pod.
+		// 保证至少有一个event返回
 		ports = []kubernetes.ContainerPort{{ContainerPort: 0}}
 	}
 
@@ -550,7 +556,7 @@ func (p *pod) publishAll(eventList [][]bus.Event, delay bool) {
 	if delay && p.config.CleanupTimeout > 0 {
 		p.logger.Debug("Publish will wait for the cleanup timeout")
 		time.AfterFunc(p.config.CleanupTimeout, func() {
-			p.publishAll(eventList, false)
+			p.publishAll(eventList, false) // 延时执行
 		})
 		return
 	}
