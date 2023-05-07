@@ -90,6 +90,7 @@ func (s *States) IsNew(state State) bool {
 
 // findPrevious returns the previous state for the file.
 // In case no previous state exists, index -1 is returned
+// 实际就是查看是否已经存在(previous的命名有歧义)
 func (s *States) findPrevious(id string) int {
 	if i, exists := s.idx[id]; exists {
 		return i
@@ -129,6 +130,7 @@ func (s *States) CleanupWith(fn func(string)) (int, int) {
 
 			delete(s.idx, state.Id)
 			if fn != nil {
+				logp.Info("-------------------- remove state: , %+v", state) // ???
 				fn(state.Id)
 			}
 			logp.Debug("state", "State removed for %v because of older: %v", state.Source, state.TTL)

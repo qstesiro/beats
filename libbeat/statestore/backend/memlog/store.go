@@ -37,11 +37,11 @@ import (
 // detected by the diskstore.
 //
 // The store allows only one writer, but multiple concurrent readers.
-// implement libbeat/statestore/backend.Store
+// @implement libbeat/statestore/backend.Store
 type store struct {
 	lock sync.RWMutex
-	disk *diskstore
-	mem  memstore
+	disk *diskstore // 磁盘存储
+	mem  memstore   // 内存存储
 }
 
 // memstore is the in memory key value store
@@ -144,6 +144,7 @@ func openStore(log *logp.Logger, home string, mode os.FileMode, bufSz uint, igno
 
 // Close closes access to the update log file and clears the in memory key
 // value store. Access to the store after close can lead to a panic.
+// @implement
 func (s *store) Close() error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
@@ -153,6 +154,7 @@ func (s *store) Close() error {
 
 // Has checks if the key is known. The in memory store does not report any
 // errors.
+// @implement
 func (s *store) Has(key string) (bool, error) {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
@@ -160,6 +162,7 @@ func (s *store) Has(key string) (bool, error) {
 }
 
 // Get retrieves and decodes the key-value pair into to.
+// @implement
 func (s *store) Get(key string, to interface{}) error {
 	s.lock.RLock()
 	defer s.lock.RUnlock()
@@ -174,6 +177,7 @@ func (s *store) Get(key string, to interface{}) error {
 // Set inserts or overwrites a key-value pair.
 // If encoding was successful the in-memory state will be updated and a
 // set-operation is logged to the diskstore.
+// @implement
 func (s *store) Set(key string, value interface{}) error {
 	var tmp common.MapStr
 	if err := typeconv.Convert(&tmp, value); err != nil {
@@ -189,6 +193,7 @@ func (s *store) Set(key string, value interface{}) error {
 
 // Remove removes a key from the in memory store and logs a remove operation to
 // the diskstore. The operation does not check if the key exists.
+// @implement
 func (s *store) Remove(key string) error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
@@ -227,6 +232,7 @@ func (s *store) logOperation(op op) error {
 }
 
 // Each iterates over all key-value pairs in the store.
+// @implement
 func (s *store) Each(fn func(string, backend.ValueDecoder) (bool, error)) error {
 	s.lock.RLock()
 	defer s.lock.RUnlock()

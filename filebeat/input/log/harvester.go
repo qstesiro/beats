@@ -18,14 +18,15 @@
 // Package log harvests different inputs for new information. Currently
 // two harvester types exist:
 //
-//   * log
-//   * stdin
+//   - log
 //
-//  The log harvester reads a file line by line. In case the end of a file is found
-//  with an incomplete line, the line pointer stays at the beginning of the incomplete
-//  line. As soon as the line is completed, it is read and returned.
+//   - stdin
 //
-//  The stdin harvesters reads data from stdin.
+//     The log harvester reads a file line by line. In case the end of a file is found
+//     with an incomplete line, the line pointer stays at the beginning of the incomplete
+//     line. As soon as the line is completed, it is read and returned.
+//
+//     The stdin harvesters reads data from stdin.
 package log
 
 import (
@@ -77,9 +78,11 @@ var (
 type OutletFactory func() channel.Outleter
 
 // Harvester contains all harvester related data
+// @implement filebeat/harvester.Harvester
 type Harvester struct {
 	id     uuid.UUID
 	config config
+	// filebeat/input/log.File
 	source harvester.Source // the source being watched
 
 	// shutdown handling
@@ -262,7 +265,7 @@ func (h *Harvester) Run() error {
 	count := 0 // for debug ???
 	defer func() {
 		// Channel to stop internal harvester routines
-		h.stop()
+		h.stop() // 内部使用once,保证执行一次
 
 		// Makes sure file is properly closed when the harvester is stopped
 		h.cleanup()
@@ -297,7 +300,7 @@ func (h *Harvester) Run() error {
 		case <-h.done:
 		}
 
-		h.stop()
+		h.stop() // 内部使用once,保证执行一次
 		err := h.reader.Close()
 		if err != nil {
 			logp.Err("Failed to stop harvester for file %s: %v", h.state.Source, err)
@@ -319,9 +322,9 @@ func (h *Harvester) Run() error {
 		default:
 		}
 		// for debug ???
-		if strings.Index(h.state.Source, "step-scan") != -1 {
-			logp.Info("-------------------- catch step-scan") // for debug ???
-		}
+		// if strings.Index(h.state.Source, "step-scan") != -1 {
+		// 	logp.Info("-------------------- catch step-scan") // for debug ???
+		// }
 
 		message, err := h.reader.Next()
 		if err != nil {
@@ -490,10 +493,10 @@ func (h *Harvester) SendStateUpdate() {
 		return
 	}
 
-	h.publishState(h.state)
+	h.publishState(h.state) // 更新filebeat/registrar.Registrar中的states
 
 	logp.Debug("harvester", "Update state: %s, offset: %v", h.state.Source, h.state.Offset)
-	h.states.Update(h.state)
+	h.states.Update(h.state) // 更新filebeat/log.Input中的states
 }
 
 // shouldExportLine decides if the line is exported or not based on
@@ -643,15 +646,16 @@ func (h *Harvester) cleanup() {
 //
 // It creates a chain of readers which looks as following:
 //
-//   limit -> (multiline -> timeout) -> strip_newline -> json -> encode -> line -> log_file
+//	limit -> (multiline -> timeout) -> strip_newline -> json -> encode -> line -> log_file
 //
 // Each reader on the left, contains the reader on the right and calls `Next()` to fetch more data.
 // At the base of all readers the the log_file reader. That means in the data is flowing in the opposite direction:
 //
-//   log_file -> line -> encode -> json -> strip_newline -> (timeout -> multiline) -> limit
+//	log_file -> line -> encode -> json -> strip_newline -> (timeout -> multiline) -> limit
 //
 // log_file implements io.Reader interface and encode reader is an adapter for io.Reader to
 // reader.Reader also handling file encodings. All other readers implement reader.Reader
+// limit -> strip_newline -> encode -> line -> filebeat/input/log.Log
 func (h *Harvester) newLogFileReader() (reader.Reader, error) {
 	var r reader.Reader
 	var err error

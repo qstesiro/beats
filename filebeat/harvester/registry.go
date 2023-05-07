@@ -89,7 +89,7 @@ func (r *Registry) Start(h Harvester) error {
 
 	go func() {
 		defer func() {
-			r.remove(h)
+			r.remove(h) // harvester循环退出后被移除
 			r.wg.Done()
 		}()
 		// Starts harvester and picks the right type. In case type is not set, set it to default (log)

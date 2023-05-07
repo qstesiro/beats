@@ -69,8 +69,8 @@ const defaultFileMode os.FileMode = 0600
 const defaultBufferSize = 4 * 1024
 
 func defaultCheckpoint(filesize uint64) bool {
-	// const limit = 10 * 1 << 20 // set rotation limit to 10MB by default
-	const limit = 1 << 10 // set rotation limit to 1KB by default (for debug ???)
+	const limit = 10 * 1 << 20 // set rotation limit to 10MB by default
+	// const limit = 1 << 10 // set rotation limit to 1KB by default (for debug ???)
 	return filesize >= limit
 }
 
@@ -102,6 +102,7 @@ func New(log *logp.Logger, settings Settings) (*Registry, error) {
 // Access creates or opens a new store. A new sub-directory for the store if
 // created, if the store does not exist.
 // Returns an error is any file access fails.
+// @implement
 func (r *Registry) Access(name string) (backend.Store, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -125,6 +126,7 @@ func (r *Registry) Access(name string) (backend.Store, error) {
 
 // Close closes the registry. No new store can be accessed during close.
 // Close blocks until all stores have been closed.
+// @implement
 func (r *Registry) Close() error {
 	r.mu.Lock()
 	r.active = false

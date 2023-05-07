@@ -18,6 +18,7 @@
 package backend
 
 // Registry provides access to stores managed by the backend storage.
+// @implemented libbeat/statestore/backend/memlog.Registry
 type Registry interface {
 	// Access opens a store. The store will be closed by the frontend, once all
 	// accessed stores have been closed.
@@ -37,6 +38,7 @@ type ValueDecoder interface {
 }
 
 // Store provides access to key value pairs.
+// @implemented libbeat/statestore.Store
 type Store interface {
 	// Close should close the store and release all used resources.
 	Close() error

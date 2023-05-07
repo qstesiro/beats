@@ -147,7 +147,7 @@ func (f *Log) errorChecks(err error) error {
 
 	// Check file wasn't read for longer then CloseInactive
 	age := time.Since(f.lastTimeRead)
-	if age > f.config.CloseInactive {
+	if age > f.config.CloseInactive { // 默认5m
 		return ErrInactive
 	}
 

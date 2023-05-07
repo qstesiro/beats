@@ -22,7 +22,7 @@
 
 # libbeat/autodiscover/providers/kubernetes
 # b kubernetes.AutodiscoverBuilder
-b kubernetes.NewPodEventer
+# b kubernetes.NewPodEventer
 # b kubernetes.(*pod).OnAdd
 # b kubernetes.(*pod).OnUpdate
 # b kubernetes.(*pod).OnDelete
@@ -38,7 +38,8 @@ b kubernetes.NewPodEventer
 # b beater.(*filebeatStore).Access
 # b beater.(*registrarLogger).Published
 
-# filebeat/registrar
+# filebeat/beater.registrar
+# b registrar.New
 # b registrar.readStatesFrom
 # b registrar.(*Registrar).Run
 # b registrar.(*Registrar).onEvents
@@ -46,6 +47,7 @@ b kubernetes.NewPodEventer
 
 # input
 # b input.New
+# b input.Plugin
 # b input.(*Runner).Stop
 # b input.(*Runner).stop
 # b input.NewRunnerFactory
@@ -91,7 +93,7 @@ b kubernetes.NewPodEventer
 # filebeat/channel
 # b channel.(*OutletFactory).Create
 # b channel.(*pipelineConnector).ConnectWith
-# b channel.(*outlet).OnEvent
+b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
 # b channel.(ConnectorFunc).ConnectWith
@@ -140,7 +142,7 @@ b kubernetes.NewPodEventer
 # b eventloop.go:548
 # b memqueue.newBufferingEventLoop
 
-# b statestore.(*Store).Remove
+b statestore.(*Store).Remove
 
 # b memlog.New
 # b memlog.openStore

@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+//go:build !windows && !integration
 // +build !windows,!integration
 
 package log
@@ -153,7 +154,7 @@ func TestInit(t *testing.T) {
 			fileStateIdentifier: &file.MockIdentifier{},
 		}
 
-		// Set states to finished
+		// Set sthandleIgnoreOlderates to finished
 		for i, state := range test.states {
 			state.Finished = true
 			test.states[i] = state

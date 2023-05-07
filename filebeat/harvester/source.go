@@ -22,6 +22,7 @@ import (
 	"os"
 )
 
+// @implemented filebeat/input/log.File
 type Source interface {
 	io.ReadCloser
 	Name() string

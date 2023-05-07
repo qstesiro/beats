@@ -56,6 +56,7 @@ type successLogger interface {
 	Published(n int) bool
 }
 
+// @implemented filebeat/beater.filebeatStore
 type StateStore interface {
 	Access() (*statestore.Store, error)
 }
@@ -81,7 +82,7 @@ func New(stateStore StateStore, out successLogger, flushTimeout time.Duration) (
 
 	r := &Registrar{
 		log:          logp.NewLogger("registrar"),
-		Channel:      make(chan []file.State, 1),
+		Channel:      make(chan []file.State, 1), // 使用无缓冲也可以 ???
 		out:          out,
 		done:         make(chan struct{}),
 		wg:           sync.WaitGroup{},

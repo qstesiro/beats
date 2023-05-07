@@ -39,6 +39,8 @@ type Creator func(*Beat, *common.Config) (Beater, error)
 // The Stop() method is invoked the first time (and only the first time) a
 // shutdown signal is received. The Stop()-method normally will stop the Run()-loop,
 // such that the beat can gracefully shutdown.
+//
+// @implemented filebeat/beater.Filebeat
 type Beater interface {
 	// The main event loop. This method should block until signalled to stop by an
 	// invocation of the Stop() method.

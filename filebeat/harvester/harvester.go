@@ -23,6 +23,7 @@ import (
 
 // Harvester contains all methods which must be supported by each harvester
 // so the registry can be used by the input
+// @implemented filebeat/input/log.Harvester
 type Harvester interface {
 	ID() uuid.UUID
 	Run() error

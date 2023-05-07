@@ -45,6 +45,8 @@ type Input interface {
 }
 
 // Runner encapsulate the lifecycle of the input
+// 普通本地日志: 与配置文件中的type:log一对一
+// k8s环境中: 与容器一对一
 type Runner struct {
 	config   inputConfig
 	input    Input

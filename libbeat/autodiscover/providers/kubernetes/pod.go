@@ -555,6 +555,7 @@ func podTerminated(pod *kubernetes.Pod, containers []*containerInPod) bool {
 func (p *pod) publishAll(eventList [][]bus.Event, delay bool) {
 	if delay && p.config.CleanupTimeout > 0 {
 		p.logger.Debug("Publish will wait for the cleanup timeout")
+		// 只延时60秒,不明白为什么 ???
 		time.AfterFunc(p.config.CleanupTimeout, func() {
 			p.publishAll(eventList, false) // 延时执行
 		})

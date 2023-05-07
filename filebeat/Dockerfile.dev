@@ -1,5 +1,5 @@
 # 修改dockerhub域名
-from reg.xxx.net/release/filebeat:7.13.4
+from reg.haier.net/release/filebeat:7.13.4
 
 copy dlv /bin/
 copy filebeat /usr/share/filebeat/

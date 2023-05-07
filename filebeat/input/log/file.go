@@ -23,7 +23,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/common/file"
 )
 
-// implement filebeat/harvester.Source
+// @implement filebeat/harvester.Source
 type File struct {
 	*os.File
 }

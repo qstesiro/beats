@@ -59,11 +59,13 @@ func init() {
 }
 
 // Input contains the input and its config
+// @implement filebeat/input.Input
 type Input struct {
 	cfg                 *common.Config
 	config              config
 	states              *file.States
 	harvesters          *harvester.Registry
+	stateHarvesters     map[string]harvester.Harvester
 	outlet              channel.Outleter
 	stateOutlet         channel.Outleter
 	done                chan struct{}
@@ -76,6 +78,10 @@ type Input struct {
 // var Paths map[*common.Config][]string // for debug ???
 
 // NewInput instantiates a new Log
+// Factory实现
+// glob模式匹配paths中的所有路径
+// 普通本地日志: 与配置文件中的type:log一对一,与input.Runner一对一
+// k8s环境中: 与容器一对一,与input.Runner一对一
 func NewInput(
 	cfg *common.Config,
 	outlet channel.Connector,
@@ -137,6 +143,7 @@ func NewInput(
 		config:              inputConfig,
 		cfg:                 cfg,
 		harvesters:          harvester.NewRegistry(),
+		stateHarvesters:     map[string]harvester.Harvester{},
 		outlet:              out,
 		stateOutlet:         stateOut,
 		states:              file.NewStates(),
@@ -145,7 +152,7 @@ func NewInput(
 		fileStateIdentifier: identifier,
 	}
 	// ts := time.Now().UnixMilli() // for debug ???
-	// Create empty harvester to check if configs are fine
+	// Create empty harvester to check if configs are fine 仅为检查配置合法性
 	// TODO: Do config validation instead
 	_, err = p.createHarvester(file.State{}, nil)
 	if err != nil {
@@ -253,6 +260,9 @@ func (p *Input) Run() {
 			if err != nil {
 				if os.IsNotExist(err) {
 					removed++
+					logp.Info("-------------------- remove state because file has been removed: %+v", state) // ???
+					state.Finished = true
+					p.stopHarvester(state, p.findHarvester(state))
 					p.removeState(state)
 					logp.Debug("input", "Remove state for file as file removed: %s", state.Source)
 				} else {
@@ -713,7 +723,16 @@ func (p *Input) createHarvester(state file.State, onTerminate func()) (*Harveste
 		subOutletWrap(p.outlet),
 	)
 	if err == nil {
-		h.onTerminate = onTerminate
+		h.onTerminate = onTerminate // 真你妈扯淡,怎么在外赋值 :(
+	}
+	if state.Id != "" {
+		if v, ok := p.stateHarvesters[state.Id]; ok {
+			// 此处不调用Stop也没有关系Stop函数是幂等
+			// 因为对应state的harvester已经在退出循环前已经进行了清理
+			// 而且与已经从registry中被移除了
+			v.Stop()
+		}
+		p.stateHarvesters[state.Id] = h
 	}
 	return h, err
 }
@@ -753,6 +772,19 @@ func (p *Input) startHarvester(state file.State, fileSeq, offset int64) error {
 		p.numHarvesters.Dec()
 	}
 	return err
+}
+
+func (p *Input) findHarvester(state file.State) harvester.Harvester {
+	return p.stateHarvesters[state.Id]
+}
+
+func (p *Input) stopHarvester(state file.State, h harvester.Harvester) {
+	if h != nil {
+		// 此处无法通过harvesters删除(registry未提供对外函数)
+		// 但是在Input.Stop会一并清理 ???
+		h.Stop()
+		delete(p.stateHarvesters, state.Id)
+	}
 }
 
 // updateState updates the input state and forwards the event to the spooler
@@ -810,6 +842,17 @@ func (p *Input) Stop() {
 		// In case the beatDone channel is closed, this will not wait for completion
 		// Otherwise Stop will wait until output is complete
 		p.harvesters.Stop()
+
+		for _, state := range p.states.GetStates() {
+			if _, err := os.Stat(state.Source); err != nil {
+				if os.IsNotExist(err) {
+					logp.Info("-------------------- remove state because file has been removed: %+v", state) // ???
+					state.Finished = true
+					p.stopHarvester(state, p.findHarvester(state))
+					p.removeState(state)
+				}
+			}
+		}
 
 		// close state updater
 		p.stateOutlet.Close()

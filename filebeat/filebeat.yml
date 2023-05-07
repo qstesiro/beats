@@ -22,7 +22,6 @@ filebeat.inputs:
 # Below are the input specific configurations.
 
 - type: log
-# - type: container
 
   # Change to true to enable this input configuration.
   enabled: true
@@ -36,6 +35,9 @@ filebeat.inputs:
     # - /var/lib/docker/containers/*/*.log
 
   symlinks: true
+  close_inactive: 1m
+  # clean_inactive: 2m
+  # ignore_older: 1m
 
 # - type: log
 # - type: container
