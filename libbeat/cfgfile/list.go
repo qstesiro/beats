@@ -103,7 +103,7 @@ func (r *RunnerList) Reload(configs []*reload.ConfigWithMeta) error {
 		}
 
 		r.logger.Debugf("Starting runner: %s", runner)
-		r.logger.Infof("------------------- starting runner: %s", runner) // for debug ???
+		// r.logger.Infof("------------------- starting runner: %s", runner) // for debug ???
 		r.runners[hash] = runner
 		runner.Start()
 		moduleStarts.Add(1)

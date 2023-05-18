@@ -182,7 +182,7 @@ func (a *Autodiscover) handleStart(event bus.Event) bool {
 	if _, ok := a.configs[eventID]; !ok {
 		a.configs[eventID] = make(map[uint64]*reload.ConfigWithMeta)
 	}
-	a.printEvent(event)                              // for debug ???
+	// a.printEvent(event)                              // for debug ???
 	configs, err := a.configurer.CreateConfig(event) // paths中的变化部分在此处从事件中提取出 ???
 	if err != nil {
 		a.logger.Debugf("Could not generate config from event %v: %v", event, err)
@@ -273,7 +273,7 @@ func (a *Autodiscover) handleStop(event bus.Event) bool {
 	}
 
 	delete(a.configs, eventID)
-	a.printEvent(event) // for debug ???
+	// a.printEvent(event) // for debug ???
 	return updated
 }
 

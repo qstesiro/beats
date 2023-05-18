@@ -138,7 +138,7 @@ func (p *pod) OnAdd(obj interface{}) {
 	defer p.crossUpdate.RUnlock()
 
 	p.logger.Debugf("Watcher Pod add: %+v", obj)
-	p.logger.Infof("Watcher Pod add") // for debug ???
+	// p.logger.Infof("Watcher Pod add") // for debug ???
 	p.emit(obj.(*kubernetes.Pod), "start", "add")
 }
 
@@ -155,7 +155,7 @@ func (p *pod) unlockedUpdate(obj interface{}) {
 	// pod删除时还会触发一次更新不明白 ???
 	// 更新时为什么要stop,start也不明白
 	p.logger.Debugf("Watcher Pod update: %+v", obj)
-	p.logger.Infof("Watcher Pod update") // for debug ???
+	// p.logger.Infof("Watcher Pod update") // for debug ???
 	// p.emit(obj.(*kubernetes.Pod), "stop", "update")
 	p.emit(obj.(*kubernetes.Pod), "start", "update")
 }
@@ -167,7 +167,7 @@ func (p *pod) OnDelete(obj interface{}) {
 	defer p.crossUpdate.RUnlock()
 
 	p.logger.Debugf("Watcher Pod delete: %+v", obj)
-	p.logger.Infof("Watcher Pod delete") // for debug ???
+	// p.logger.Infof("Watcher Pod delete") // for debug ???
 	p.emit(obj.(*kubernetes.Pod), "stop", "delete")
 }
 
@@ -337,9 +337,9 @@ func (p *pod) emit(pod *kubernetes.Pod, flag, op string) { // op参数我添加�
 				val += fmt.Sprintf("%v:%v:%v:%v\n", op, pod.ObjectMeta.Name, e.spec.Name, e.id)
 			}
 		}
-		if val != "" {
-			logp.Info("+++++++++++++++++++++++ flag: %v \n%v", flag, val)
-		}
+		// if val != "" {
+		// 	logp.Info("+++++++++++++++++++++++ flag: %v \n%v", flag, val) // debug ???
+		// }
 	}
 	anyContainerRunning := false
 	for _, c := range containers {
@@ -555,7 +555,7 @@ func podTerminated(pod *kubernetes.Pod, containers []*containerInPod) bool {
 func (p *pod) publishAll(eventList [][]bus.Event, delay bool) {
 	if delay && p.config.CleanupTimeout > 0 {
 		p.logger.Debug("Publish will wait for the cleanup timeout")
-		// 只延时60秒,不明白为什么 ???
+		// 延时一段时间,可以保证被删除的pod所对应的日志文件被正常的清理
 		time.AfterFunc(p.config.CleanupTimeout, func() {
 			p.publishAll(eventList, false) // 延时执行
 		})

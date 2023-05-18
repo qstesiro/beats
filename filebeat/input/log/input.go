@@ -209,18 +209,18 @@ func (p *Input) loadStates(states []file.State) error {
 		}
 	}
 	// for debug ???
-	if sum > int64(0) {
-		logp.Info(
-			"----------------- log.Input update states dura: %ds, %dms, prev: %d, input: %d",
-			sum/1e3, sum,
-			p.states.Count(), len(states),
-		)
-	} else {
-		logp.Info(
-			"----------------- log.Input update states prev: %d, input: %d",
-			p.states.Count(), len(states),
-		)
-	}
+	// if sum > int64(0) {
+	// 	logp.Info(
+	// 		"----------------- log.Input update states dura: %ds, %dms, prev: %d, input: %d",
+	// 		sum/1e3, sum,
+	// 		p.states.Count(), len(states),
+	// 	)
+	// } else {
+	// 	logp.Info(
+	// 		"----------------- log.Input update states prev: %d, input: %d",
+	// 		p.states.Count(), len(states),
+	// 	)
+	// }
 	logp.Debug("input", "input with previous states loaded: %v", p.states.Count())
 	return nil
 }
@@ -860,7 +860,7 @@ func (p *Input) Stop() {
 		// stop all communication between harvesters and publisher pipeline
 		p.outlet.Close()
 
-		logp.Info("------------------- Unconfigured paths: %v", p.config.Paths) // for debug ???
+		// logp.Info("------------------- Unconfigured paths: %v", p.config.Paths) // for debug ???
 	})
 }
 

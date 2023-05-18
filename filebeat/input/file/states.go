@@ -18,6 +18,7 @@
 package file
 
 import (
+	"os"
 	"sync"
 	"time"
 
@@ -121,16 +122,19 @@ func (s *States) CleanupWith(fn func(string)) (int, int) {
 		canExpire := state.TTL > 0
 		expired := (canExpire && currentTime.Sub(state.Timestamp) > state.TTL)
 		// 删除逻辑算法处理优秀 !!!
-		if state.TTL == 0 || expired {
+		// if state.TTL == 0 || expired {
+		if state.TTL <= 0 || expired { // 增加TTL < 0的情况处理 ???
 			if !state.Finished {
 				logp.Err("State for %s should have been dropped, but couldn't as state is not finished.", state.Source)
 				i++
 				continue
 			}
-
+			if state.TTL < 0 && !s.IsNotExist(state) { // TTL < 0 情况处理 ???
+				continue
+			}
 			delete(s.idx, state.Id)
 			if fn != nil {
-				logp.Info("-------------------- remove state: , %+v", state) // ???
+				logp.Info("-------------------- remove state: %+v", state) // ???
 				fn(state.Id)
 			}
 			logp.Debug("state", "State removed for %v because of older: %v", state.Source, state.TTL)
@@ -150,6 +154,13 @@ func (s *States) CleanupWith(fn func(string)) (int, int) {
 
 	s.states = s.states[:L]
 	return statesBefore - L, numCanExpire
+}
+
+func (s *States) IsNotExist(state *State) bool {
+	if _, err := os.Stat(state.Source); err != nil {
+		return os.IsNotExist(err)
+	}
+	return false
 }
 
 // Count returns number of states

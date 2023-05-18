@@ -22,7 +22,7 @@
 
 # libbeat/autodiscover/providers/kubernetes
 # b kubernetes.AutodiscoverBuilder
-# b kubernetes.NewPodEventer
+b kubernetes.NewPodEventer
 # b kubernetes.(*pod).OnAdd
 # b kubernetes.(*pod).OnUpdate
 # b kubernetes.(*pod).OnDelete
@@ -93,7 +93,7 @@
 # filebeat/channel
 # b channel.(*OutletFactory).Create
 # b channel.(*pipelineConnector).ConnectWith
-b channel.(*outlet).OnEvent
+# b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
 # b channel.(ConnectorFunc).ConnectWith
@@ -142,7 +142,7 @@ b channel.(*outlet).OnEvent
 # b eventloop.go:548
 # b memqueue.newBufferingEventLoop
 
-b statestore.(*Store).Remove
+# b statestore.(*Store).Remove
 
 # b memlog.New
 # b memlog.openStore

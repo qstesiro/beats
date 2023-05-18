@@ -17,14 +17,16 @@ filebeat:
         enabled: true
       # node: ${NODE_NAME}
       # 生产
-      # node: prd-dmz-ack22128worker
+      node: prd-dmz-ack22128worker
+      cleanup_timeout: 5m
       # node: prd-dmz-ack21194worker
       # 测试
-      node: test-dmz-ack-23238-worker
+      # node: test-dmz-ack-23238-worker
       # 普通node
       # node: prd-10.162.167.47-s01764-paas
       # node: prd-paas-10.163.222.171-s01764
       type: kubernetes
+
 
 output:
   console:

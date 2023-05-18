@@ -247,6 +247,8 @@ func (s *store) Each(fn func(string, backend.ValueDecoder) (bool, error)) error 
 	return nil
 }
 
+// 以下为memstore只实现了libbeat/statestore/backend.Store接口的部分函数
+
 func (m *memstore) Has(key string) bool {
 	_, exists := m.table[key]
 	return exists

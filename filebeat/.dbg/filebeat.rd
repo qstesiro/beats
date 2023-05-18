@@ -9,6 +9,15 @@
     ./filebeat -e -c ./filebeat.yml
 }
 
+# 单元测试
+{
+    # 运行
+    {
+        go test github.com/elastic/beats/v7/filebeat/input/log -run=TestMatchPath -v
+        go test github.com/elastic/beats/v7/filebeat/input/log -run=^$ -bench=BenchmarkMatchPath -v
+    }
+}
+
 # 日志文件
 {
     while [[ 1 ]]; do
@@ -45,12 +54,12 @@
 # docker
 {
     # 修改dockerhub域名
-    docker build ./ -f Dockerfile.dev -t reg.xxx.net/release/filebeat-dev:7.13.4.18
-    docker push reg.xxx.net/release/filebeat-dev:7.13.4.18
+    docker build ./ -f Dockerfile.dev -t reg.xxx.net/release/filebeat-dev:7.13.4.28
+    docker push reg.xxx.net/release/filebeat-dev:7.13.4.28
     kubectl --context=qd-aliyun-dmz-ack-test -n logging edit daemonset/filebeat-beat-filebeat
 
     # 更新image
-    kubectl --context=qd-aliyun-dmz-ack-test edit daemon/filebeat-beat-filebeat
+    kubectl --context=qd-aliyun-dmz-ack-test -n logging edit daemonset/filebeat-beat-filebeat
     kubectl --context=qd-aliyun-dmz-ack-test get pod -o wide -A | grep filebeat | grep test-dmz-ack-23238-worker
 }
 

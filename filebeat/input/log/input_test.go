@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+//go:build !integration
 // +build !integration
 
 package log
@@ -260,6 +261,59 @@ func TestMatchesMeta(t *testing.T) {
 
 	for _, test := range tests {
 		assert.Equal(t, test.Result, test.Input.matchesMeta(test.Meta))
+	}
+}
+
+func TestMatchPath(t *testing.T) {
+	inputs := []*Input{
+		&Input{
+			config: config{
+				Paths: []string{
+					"/var/log/containers/*0a5e622c9d1fbbe6557a6ee6d4d036996d284c50ea5b31bc4c40cc9c27814e7c.log",
+				},
+			},
+		},
+	}
+	states := []*file.State{
+		&file.State{Source: "/var/log/containers/b4b2693a17be4cf285f4b686561cbbef-cronjob-7ltv4-28052760-8whmb_tekton-pipelines_script-0a5e622c9d1fbbe6557a6ee6d4d036996d284c50ea5b31bc4c40cc9c27814e7c.log"},
+		&file.State{Source: "/var/log/containers/68d0f86c40fd4d68b47835a270f42457-manual-xq799-3vg18nz60dft-pod_tekton-pipelines_step-sca-scan-616d0f223867a4e3f33b773882b2154fd1f9410661cf35d5704e8ab9d2a8deb7.log"},
+		&file.State{Source: "/var/log/containers/e86e5fd0e7d243a7b509ee540f3f5b4a-manual-98cw4-27kpluvv8mm1-pod_tekton-pipelines_prepare-3579afaf98f44f1aa4df776b1a642040f847f69902944f3a11b824c759d78278.log"},
+		&file.State{Source: "/var/log/containers/prometheus-monitoring-kube-prometheus-prometheus-0_monitoring_prometheus-a95d89f2a4f070dfb19d45b3c2513d3f03333eaccb03007c996816150cf2c566.log"},
+		&file.State{Source: "/var/log/containers/644fff3e902f424c80584824e1728ecf-manual-rh9b2-hk21ftuqxc18-pod_tekton-pipelines_prepare-3b3c0470f37a6e2e2a4daf2edabdd330e6e1671131c903a235ce3afcd44e17de.log"},
+		&file.State{Source: "/var/log/containers/81bccede021f4dfcbe62fb0147e47c9c-manual-vhlds-6wulb5wiihn3-pod_tekton-pipelines_step-codesec-scan-f8c2dfbde648f81ccbe4311444c5e7e61490e301f1895c6e0f563d23ff15a3de.log"},
+		&file.State{Source: "/var/log/containers/73c5413e5aba4d4fae94719335bb1735-manual-nwxx6-v03pvt6514e1-pod_tekton-pipelines_step-clone-bddfe72431d190239b8ce2bb6b64eff159197bdc19b4f67e5a124b7a4401c55a.log"},
+	}
+	for _, input := range inputs {
+		for _, state := range states {
+			input.matchesFile(state.Source)
+		}
+	}
+}
+
+func BenchmarkMatchPath(b *testing.B) {
+	inputs := []*Input{
+		&Input{
+			config: config{
+				Paths: []string{
+					"/var/log/containers/*0a5e622c9d1fbbe6557a6ee6d4d036996d284c50ea5b31bc4c40cc9c27814e7c.log",
+				},
+			},
+		},
+	}
+	states := []*file.State{
+		&file.State{Source: "/var/log/containers/b4b2693a17be4cf285f4b686561cbbef-cronjob-7ltv4-28052760-8whmb_tekton-pipelines_script-0a5e622c9d1fbbe6557a6ee6d4d036996d284c50ea5b31bc4c40cc9c27814e7c.log"},
+		&file.State{Source: "/var/log/containers/68d0f86c40fd4d68b47835a270f42457-manual-xq799-3vg18nz60dft-pod_tekton-pipelines_step-sca-scan-616d0f223867a4e3f33b773882b2154fd1f9410661cf35d5704e8ab9d2a8deb7.log"},
+		&file.State{Source: "/var/log/containers/e86e5fd0e7d243a7b509ee540f3f5b4a-manual-98cw4-27kpluvv8mm1-pod_tekton-pipelines_prepare-3579afaf98f44f1aa4df776b1a642040f847f69902944f3a11b824c759d78278.log"},
+		&file.State{Source: "/var/log/containers/prometheus-monitoring-kube-prometheus-prometheus-0_monitoring_prometheus-a95d89f2a4f070dfb19d45b3c2513d3f03333eaccb03007c996816150cf2c566.log"},
+		&file.State{Source: "/var/log/containers/644fff3e902f424c80584824e1728ecf-manual-rh9b2-hk21ftuqxc18-pod_tekton-pipelines_prepare-3b3c0470f37a6e2e2a4daf2edabdd330e6e1671131c903a235ce3afcd44e17de.log"},
+		&file.State{Source: "/var/log/containers/81bccede021f4dfcbe62fb0147e47c9c-manual-vhlds-6wulb5wiihn3-pod_tekton-pipelines_step-codesec-scan-f8c2dfbde648f81ccbe4311444c5e7e61490e301f1895c6e0f563d23ff15a3de.log"},
+		&file.State{Source: "/var/log/containers/73c5413e5aba4d4fae94719335bb1735-manual-nwxx6-v03pvt6514e1-pod_tekton-pipelines_step-clone-bddfe72431d190239b8ce2bb6b64eff159197bdc19b4f67e5a124b7a4401c55a.log"},
+	}
+	b.ResetTimer()
+	for _, input := range inputs {
+		for _, state := range states {
+			input.matchesFile(state.Source)
+		}
 	}
 }
 

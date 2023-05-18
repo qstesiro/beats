@@ -387,7 +387,11 @@ func resetStates(states []file.State) []file.State {
 	for key, state := range states {
 		state.Finished = true
 		// Set ttl to -2 to easily spot which states are not managed by a input
-		state.TTL = -2
+		// 保留旧的TTL不重置 ???
+		// TTL >= 0 在states.CleanupWith可以正常清理
+		// TTL <  0 在states.CleanupWith可以正常清理
+		// 此处存在bug,如果文件已经被删除,此文件对应的state将不会被删除,永远被存储在checkpoint文件中 ???
+		// state.TTL = -2
 		states[key] = state
 	}
 	return states

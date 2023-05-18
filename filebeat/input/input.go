@@ -108,7 +108,7 @@ func (p *Runner) Start() {
 		// Make sure start is only completed when Run did a complete first scan
 		defer onceWg.Wait()
 	}
-	logp.Info("---------------------- input/Runner start") // for debug ???
+	// logp.Info("---------------------- input/Runner start") // for debug ???
 	onceWg.Add(1)
 	inputList.Add(p.config.Type)
 	// Add waitgroup to make sure input is finished

@@ -98,6 +98,7 @@ func (b *bus) Publish(e Event) {
 			case eve := <-b.store:
 				for _, listener := range b.listeners {
 					if listener.interested(eve) {
+						// b.log.Infof("----------------- listener channel size: %d", len(listener.channel)) // ???
 						listener.channel <- eve
 					}
 				}
@@ -109,7 +110,7 @@ func (b *bus) Publish(e Event) {
 
 	for _, listener := range b.listeners {
 		if listener.interested(e) {
-			b.log.Infof("----------------- listener channel size: %d", len(listener.channel)) // for debug ???
+			// b.log.Infof("----------------- listener channel size: %d", len(listener.channel)) // ???
 			listener.channel <- e
 		}
 	}
@@ -117,9 +118,10 @@ func (b *bus) Publish(e Event) {
 
 func (b *bus) Subscribe(filter ...string) Listener {
 	listener := &listener{
-		filter:  filter,
-		bus:     b,
-		channel: make(chan Event, 100),
+		filter: filter,
+		bus:    b,
+		// channel: make(chan Event, 100),
+		channel: make(chan Event, 4096), //  ???
 	}
 
 	b.Lock()

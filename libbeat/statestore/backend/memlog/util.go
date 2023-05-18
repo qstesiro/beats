@@ -29,11 +29,12 @@ import (
 // or the input buffer has been exhausted.
 //
 // XXX: this code was written and tested with go1.13 and go1.14, which does not
-//      handled EINTR. Some users report EINTR getting triggered more often in
-//      go1.14 due to changes in the signal handling for implementing
-//      preemption.
-//      In future versions EINTR will be handled by go for us.
-//      See: https://github.com/golang/go/issues/38033
+//
+//	handled EINTR. Some users report EINTR getting triggered more often in
+//	go1.14 due to changes in the signal handling for implementing
+//	preemption.
+//	In future versions EINTR will be handled by go for us.
+//	See: https://github.com/golang/go/issues/38033
 type ensureWriter struct {
 	w io.Writer
 }
@@ -63,7 +64,7 @@ func (e *ensureWriter) Write(p []byte) (int, error) {
 }
 
 func isRetryErr(err error) bool {
-	return err == syscall.EINTR || err == syscall.EAGAIN
+	return err == syscall.EINTR || err == syscall.EAGAIN // ???
 }
 
 // trySyncPath provides a best-effort fsync on path (directory). The fsync is required by some

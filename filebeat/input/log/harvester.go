@@ -34,7 +34,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
+	// "strings"
 	"sync"
 	"time"
 
@@ -274,10 +274,10 @@ func (h *Harvester) Run() error {
 
 		// Marks harvester stopping completed
 		h.stopWg.Done()
-		logp.Info("-------------------- return read file: %v, count: %d", h.state.Source, count) // for debug ???
-		if strings.Index(h.state.Source, "step-scan") != -1 {
-			logp.Info("-------------------- catch step-scan") // for debug ???
-		}
+		// logp.Info("-------------------- return read file: %v, count: %d", h.state.Source, count) // for debug ???
+		// if strings.Index(h.state.Source, "step-scan") != -1 {
+		// 	logp.Info("-------------------- catch step-scan") // for debug ???
+		// }
 	}()
 
 	harvesterStarted.Add(1)
@@ -314,7 +314,7 @@ func (h *Harvester) Run() error {
 		h.monitorFileSize()
 		h.doneWg.Done()
 	}()
-	logp.Info("-------------------- read file: %v", h.state.Source) // for debug ???
+	// logp.Info("-------------------- read file: %v", h.state.Source) // for debug ???
 	for {
 		select {
 		case <-h.done:
@@ -358,7 +358,7 @@ func (h *Harvester) Run() error {
 		count += 1 // for debug ???
 		// Stop harvester in case of an error
 		if !h.onMessage(forwarder, state, message, startingOffset) {
-			logp.Info("-------------------- send message fail: %v, count: %d", h.state.Source, count) // for debug ???
+			// logp.Info("-------------------- send message fail: %v, count: %d", h.state.Source, count) // for debug ???
 			return nil
 		}
 
