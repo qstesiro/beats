@@ -437,7 +437,7 @@ func (h *Harvester) onMessage(
 
 	fields := common.MapStr{
 		"log": common.MapStr{
-			"fileSeq": state.FileSeq,
+			"fileSeq": state.FileSeq, // 增加文件序号
 			"offset":  messageOffset, // Offset here is the offset before the starting char.
 			"file": common.MapStr{
 				"path": state.Source,

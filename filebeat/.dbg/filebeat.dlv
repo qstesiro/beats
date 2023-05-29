@@ -22,7 +22,7 @@
 
 # libbeat/autodiscover/providers/kubernetes
 # b kubernetes.AutodiscoverBuilder
-b kubernetes.NewPodEventer
+# b kubernetes.NewPodEventer
 # b kubernetes.(*pod).OnAdd
 # b kubernetes.(*pod).OnUpdate
 # b kubernetes.(*pod).OnDelete
@@ -46,7 +46,7 @@ b kubernetes.NewPodEventer
 # b registrar.(*Registrar).commitStateUpdates
 
 # input
-# b input.New
+b input.New
 # b input.Plugin
 # b input.(*Runner).Stop
 # b input.(*Runner).stop
@@ -112,7 +112,8 @@ b kubernetes.NewPodEventer
 # b pipeline.newClientCloseWaiter # 未被调用
 # b pipeline.(*client).Publish
 
-# pipeline
+# libbeat/publisher/pipeline
+b pipeline.(*client).Publish
 # b pipeline.(*Pipeline).ConnectWith
 # b pipeline/pipeline.go:302
 # b pipeline.makeClientWorker

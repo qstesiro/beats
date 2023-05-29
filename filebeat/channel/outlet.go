@@ -22,6 +22,8 @@ import (
 	"github.com/elastic/beats/v7/libbeat/common/atomic"
 )
 
+// @implement filebeat/channel.Outleter
+// @implement filebeat/harvester.Outlet
 type outlet struct {
 	client beat.Client
 	isOpen atomic.Bool

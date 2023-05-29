@@ -23,6 +23,8 @@ import (
 	"github.com/elastic/beats/v7/libbeat/beat"
 )
 
+// @implement filebeat/channel.Outleter
+// @implement filebeat/harvester.Outlet
 type subOutlet struct {
 	done      chan struct{}
 	ch        chan beat.Event
@@ -41,8 +43,9 @@ func SubOutlet(out Outleter) Outleter {
 	}
 
 	go func() {
+		// 处理方式思路清奇 ???
 		for event := range s.ch {
-			s.res <- out.OnEvent(event)
+			s.res <- out.OnEvent(event) // 利用闭包特性使用out而不是直接组合存储 ???
 		}
 	}()
 
@@ -80,7 +83,7 @@ func (o *subOutlet) OnEvent(event beat.Event) bool {
 	case <-o.done:
 		return false
 
-	case o.ch <- event:
+	case o.ch <- event: // 处理方式思路清奇 ???
 		select {
 		case <-o.done:
 

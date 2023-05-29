@@ -25,6 +25,8 @@ import (
 )
 
 // Outlet interface is used for forwarding events
+// @implemented filebeat/channel.outlet
+// @implemented filebeat/channel.subOutlet
 type Outlet interface {
 	OnEvent(data beat.Event) bool
 }

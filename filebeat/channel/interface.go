@@ -22,7 +22,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/common"
 )
 
-// Factory is used to create a new Outlet instance
+// Factory is used to create a new Outlet instance (应该是创建Connector实例)
 type Factory func(beat.PipelineConnector) Connector
 
 // Connector creates an Outlet connecting the event publishing with some internal pipeline.
@@ -33,6 +33,8 @@ type Connector interface {
 }
 
 // Outleter is the outlet for an input
+// @implemented filebeat/channel.outlet
+// @implemented filebeat/channel.subOutlet
 type Outleter interface {
 	Close() error
 	Done() <-chan struct{}
