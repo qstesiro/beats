@@ -23,12 +23,9 @@ import (
 )
 
 // ConnectorFunc is an adapter for using ordinary functions as Connector.
+// @implement filebeat/channel.Connector
+// 函数类型绑定函数 ???
 type ConnectorFunc func(*common.Config, beat.ClientConfig) (Outleter, error)
-
-type pipelineConnector struct {
-	parent   *OutletFactory
-	pipeline beat.PipelineConnector
-}
 
 // Connect passes the cfg and the zero value of beat.ClientConfig to the underlying function.
 func (fn ConnectorFunc) Connect(cfg *common.Config) (Outleter, error) {
@@ -38,6 +35,12 @@ func (fn ConnectorFunc) Connect(cfg *common.Config) (Outleter, error) {
 // ConnectWith passes the configuration and the pipeline connection setting to the underlying function.
 func (fn ConnectorFunc) ConnectWith(cfg *common.Config, clientCfg beat.ClientConfig) (Outleter, error) {
 	return fn(cfg, clientCfg)
+}
+
+// @implement filebeat/channel.Connector
+type pipelineConnector struct {
+	parent   *OutletFactory
+	pipeline beat.PipelineConnector
 }
 
 func (c *pipelineConnector) Connect(cfg *common.Config) (Outleter, error) {

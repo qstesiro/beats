@@ -33,6 +33,7 @@ type Registry interface {
 
 // ValueDecoder is used to decode values into go structs or maps within a transaction.
 // A ValueDecoder is supposed to be invalidated by beats after the loop operations has returned.
+// @implemented libbeat/statestore/backend/memlog.entry
 type ValueDecoder interface {
 	Decode(to interface{}) error
 }

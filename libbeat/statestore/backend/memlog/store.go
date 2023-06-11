@@ -44,15 +44,6 @@ type store struct {
 	mem  memstore   // 内存存储
 }
 
-// memstore is the in memory key value store
-type memstore struct {
-	table map[string]entry
-}
-
-type entry struct {
-	value map[string]interface{}
-}
-
 // openStore opens a store from the home path.
 // The directory and intermediate directories will be created if it does not exist.
 // The open routine loads the full key-value store into memory by first reading the data file and finally applying all outstanding updates
@@ -247,7 +238,11 @@ func (s *store) Each(fn func(string, backend.ValueDecoder) (bool, error)) error 
 	return nil
 }
 
-// 以下为memstore只实现了libbeat/statestore/backend.Store接口的部分函数
+// memstore is the in memory key value store
+// 只实现了libbeat/statestore/backend.Store接口的部分函数
+type memstore struct {
+	table map[string]entry
+}
 
 func (m *memstore) Has(key string) bool {
 	_, exists := m.table[key]
@@ -275,6 +270,11 @@ func (m *memstore) Remove(key string) bool {
 	return true
 }
 
+// implement libbeat/statestore/backend.ValueDecoder
+type entry struct {
+	value map[string]interface{}
+}
+
 func (e entry) Decode(to interface{}) error {
-	return typeconv.Convert(to, e.value)
+	return typeconv.Convert(to, e.value) // ???
 }

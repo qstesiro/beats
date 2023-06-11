@@ -46,7 +46,7 @@
 # b registrar.(*Registrar).commitStateUpdates
 
 # input
-b input.New
+# b input.New
 # b input.Plugin
 # b input.(*Runner).Stop
 # b input.(*Runner).stop
@@ -92,7 +92,7 @@ b input.New
 
 # filebeat/channel
 # b channel.(*OutletFactory).Create
-# b channel.(*pipelineConnector).ConnectWith
+b channel.(*pipelineConnector).ConnectWith
 # b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
@@ -113,7 +113,7 @@ b input.New
 # b pipeline.(*client).Publish
 
 # libbeat/publisher/pipeline
-b pipeline.(*client).Publish
+# b pipeline.(*client).Publish
 # b pipeline.(*Pipeline).ConnectWith
 # b pipeline/pipeline.go:302
 # b pipeline.makeClientWorker

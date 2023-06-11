@@ -166,8 +166,8 @@ func TestProcessorsForConfigIsFlat(t *testing.T) {
 	// This test should be removed once we have a more consistent mechanism for
 	// collecting and running processors.
 	configStr := `processors:
-- add_fields: {fields: {testField: value}}
-- add_fields: {fields: {testField2: stuff}}`
+                    - add_fields: {fields: {testField: value}}
+                    - add_fields: {fields: {testField2: stuff}}`
 	config, err := common.NewConfigFrom(configStr)
 	if err != nil {
 		t.Fatal(err)

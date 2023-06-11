@@ -27,6 +27,8 @@ type Factory func(beat.PipelineConnector) Connector
 
 // Connector creates an Outlet connecting the event publishing with some internal pipeline.
 // type Connector func(*common.Config, *common.MapStrPointer) (Outleter, error)
+// @implemented filebeat/channel.ConnectorFunc
+// @implemented filebeat/channel.pipelineConnector
 type Connector interface {
 	Connect(*common.Config) (Outleter, error)
 	ConnectWith(*common.Config, beat.ClientConfig) (Outleter, error)
