@@ -24,13 +24,14 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher/queue"
 )
 
+// @implemented libbeat/pipeline.batch
 type Batch interface {
 	publisher.Batch
 
 	reduceTTL() bool
 }
 
-// 实现pipeline.Batch
+// @implement libbeat/pipeline.Batch
 type batch struct {
 	original queue.Batch
 	ctx      *batchContext

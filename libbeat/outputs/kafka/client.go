@@ -364,7 +364,7 @@ func (r *msgRef) fail(msg *message, err error) {
 
 func (r *msgRef) dec() {
 	i := atomic.AddInt32(&r.count, -1)
-	if i > 0 {
+	if i > 0 { // 判定批次中事件是否都已经结束(成功/失败)
 		return
 	}
 
@@ -384,7 +384,7 @@ func (r *msgRef) dec() {
 
 		r.client.log.Debugf("Kafka publish failed with: %+v", err)
 	} else {
-		r.batch.ACK()
+		r.batch.ACK() // 一批只应答一次
 		stats.Acked(r.total)
 	}
 }

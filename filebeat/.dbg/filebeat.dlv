@@ -114,7 +114,7 @@
 # b pipeline.(*client).Publish
 # b pipeline.(*Pipeline).ConnectWith
 # b pipeline/pipeline.go:302
-b pipeline.makeClientWorker
+# b pipeline.makeClientWorker
 # b pipeline.newOutputController
 # b pipeline.(*outputController).Set
 # b pipeline.newEventConsumer
@@ -127,7 +127,7 @@ b pipeline.makeClientWorker
 # libbeat/outputs/console
 # b console.makeConsole
 # b console.newConsole
-# b console.Publish
+b console.Publish
 
 # codec.json
 # b codec/json.makeEvent
