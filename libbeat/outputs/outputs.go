@@ -28,6 +28,7 @@ import (
 
 // Client provides the minimal interface an output must implement to be usable
 // with the publisher pipeline.
+// @implemented libbeat/ouputs/console.console
 type Client interface {
 	Close() error
 

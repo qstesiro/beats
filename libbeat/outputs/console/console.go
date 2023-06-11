@@ -34,7 +34,7 @@ import (
 	"github.com/elastic/beats/v7/libbeat/publisher"
 )
 
-// 实现libbeat/outputs.Client
+// @implement libbeat/outputs.Client
 type console struct {
 	log      *logp.Logger
 	out      *os.File

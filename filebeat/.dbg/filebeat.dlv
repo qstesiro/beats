@@ -4,11 +4,9 @@
 # b instance/beat.go:175
 # b instance/beat.go:354
 # b instance.(*Beat).createOutput
+# b instance.(*Beat).makeOutputFactory
 # b instance.(*Beat).launch
 # b instance.handleError
-
-# outputs
-# b outputs.Load
 
 # autodiscover
 # b autodiscover.(*registry).AddProvider
@@ -92,7 +90,7 @@
 
 # filebeat/channel
 # b channel.(*OutletFactory).Create
-b channel.(*pipelineConnector).ConnectWith
+# b channel.(*pipelineConnector).ConnectWith
 # b channel.(*outlet).OnEvent
 # b pipeline.(*client).publish
 # b memqueue.(*ackProducer).Publish
@@ -116,14 +114,18 @@ b channel.(*pipelineConnector).ConnectWith
 # b pipeline.(*client).Publish
 # b pipeline.(*Pipeline).ConnectWith
 # b pipeline/pipeline.go:302
-# b pipeline.makeClientWorker
+b pipeline.makeClientWorker
 # b pipeline.newOutputController
 # b pipeline.(*outputController).Set
 # b pipeline.newEventConsumer
 # b pipeline.(*eventConsumer).loop
 # b pipeline.newBatch
 
-# console
+# outputs
+# b outputs.Load
+
+# libbeat/outputs/console
+# b console.makeConsole
 # b console.newConsole
 # b console.Publish
 

@@ -30,7 +30,7 @@ filebeat.inputs:
   paths:
     # - /var/log/*.log
     # - /home/qstesiro/github.com/qstesiro/beats/filebeat/*link.log
-    - /home/qstesiro/github.com/qstesiro/beats/filebeat/*.log
+    - /home/qstesiro/github.com/qstesiro/beats/filebeat/demo-*.log
     #- c:\programdata\elasticsearch\logs\*
     # - /var/lib/docker/containers/*/*.log
 
@@ -202,6 +202,11 @@ filebeat.inputs:
 # ---------------------------- Log Output ----------------------------
 output.console:
   pretty: true
+
+# ---------------------------- File Output ----------------------------
+# output.file:
+#   path: "./"
+#   filename: demo-output.log
 
 # ---------------------------- Elasticsearch Output ----------------------------
 # output.elasticsearch:
