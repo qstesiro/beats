@@ -156,7 +156,7 @@ func (c *eventConsumer) loop(consumer queue.Consumer) {
 	handleSignal := func(sig consumerSignal) error {
 		switch sig.tag {
 		case sigStop:
-			return errStopped
+			return errStopped // sigStop退出
 
 		case sigConsumerCheck:
 
@@ -197,7 +197,7 @@ func (c *eventConsumer) loop(consumer queue.Consumer) {
 
 		select {
 		case sig := <-c.sig:
-			if err := handleSignal(sig); err != nil {
+			if err := handleSignal(sig); err != nil { // sigStop退出
 				return
 			}
 			continue
@@ -206,7 +206,7 @@ func (c *eventConsumer) loop(consumer queue.Consumer) {
 
 		select {
 		case sig := <-c.sig:
-			if err := handleSignal(sig); err != nil {
+			if err := handleSignal(sig); err != nil { // sigStop退出
 				return
 			}
 		case out <- batch: // pub-step3

@@ -111,18 +111,19 @@
 # b pipeline.(*client).Publish
 
 # libbeat/publisher/pipeline
+b pipeline.New
 # b pipeline.(*client).Publish
 # b pipeline.(*Pipeline).ConnectWith
 # b pipeline/pipeline.go:302
 # b pipeline.makeClientWorker
 # b pipeline.newOutputController
-# b pipeline.(*outputController).Set
+b pipeline.(*outputController).Set
 # b pipeline.newEventConsumer
 # b pipeline.(*eventConsumer).loop
 # b pipeline.newBatch
 
 # outputs
-# b outputs.Load
+b outputs.Load
 
 # libbeat/outputs/console
 # b console.makeConsole

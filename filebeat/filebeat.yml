@@ -208,6 +208,16 @@ output.console:
 #   path: "./"
 #   filename: demo-output.log
 
+# ---------------------------- Kafka Output ----------------------------
+# output.kafka:
+#   # initial brokers for reading cluster metadata
+#   hosts:
+#     - 10.163.204.193:9092
+#     - 10.163.204.194:9092
+#     - 10.163.204.195:9092
+#   # message topic selection + partitioning
+#   topic: 'filebeat-demo'
+
 # ---------------------------- Elasticsearch Output ----------------------------
 # output.elasticsearch:
   # Array of hosts to connect to.

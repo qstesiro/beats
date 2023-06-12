@@ -107,7 +107,7 @@ func (c *outputController) Set(outGrp outputs.Group) {
 	worker := make([]outputWorker, len(clients))
 	for i, client := range clients {
 		logger := logp.NewLogger("publisher_pipeline_output")
-		worker[i] = makeClientWorker(c.observer, c.workQueue, client, logger, c.monitors.Tracer)
+		worker[i] = makeClientWorker(c.observer, c.workQueue, client, logger, c.monitors.Tracer) // 函数中执行run()
 	}
 	grp := &outputGroup{
 		workQueue:  c.workQueue,

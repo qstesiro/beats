@@ -98,7 +98,7 @@ func (w *clientWorker) run() {
 		case <-w.done:
 			return
 
-		case batch := <-w.qu:
+		case batch := <-w.qu: // pub-step4
 			if batch == nil {
 				continue
 			}
