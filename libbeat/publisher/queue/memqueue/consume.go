@@ -59,7 +59,7 @@ func newConsumer(b *broker) *consumer {
 	}
 }
 
-// libbeat/publisher/queue.Batch.Get
+// @implement libbeat/publisher/queue.Consumer.Get
 func (c *consumer) Get(sz int) (queue.Batch, error) {
 	if c.closed.Load() {
 		return nil, io.EOF
@@ -81,7 +81,7 @@ func (c *consumer) Get(sz int) (queue.Batch, error) {
 	}, nil
 }
 
-// libbeat/publisher/queue.Batch.Close
+// libbeat/publisher/queue.Consumer.Close
 func (c *consumer) Close() error {
 	if c.closed.Swap(true) {
 		return errors.New("already closed")

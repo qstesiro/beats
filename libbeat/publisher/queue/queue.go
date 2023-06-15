@@ -44,7 +44,7 @@ type ACKListener interface {
 // consumer or flush to some other intermediate storage), it will send an ACK signal
 // with the number of ACKed events to the Producer (ACK happens in batches).
 type Queue interface {
-	io.Closer
+	io.Closer // Close() error
 
 	BufferConfig() BufferConfig
 

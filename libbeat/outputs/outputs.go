@@ -29,6 +29,7 @@ import (
 // Client provides the minimal interface an output must implement to be usable
 // with the publisher pipeline.
 // @implemented libbeat/ouputs/console.console
+// @implemented libbeat/ouputs/fileout.fileOutput
 type Client interface {
 	Close() error
 
@@ -46,6 +47,9 @@ type Client interface {
 
 // NetworkClient defines the required client capabilities for network based
 // outputs, that must be reconnectable.
+// @implemented libbeat/ouputs/kafka.client
+// @implemented libbeat/ouputs/redis.client
+// @implemented libbeat/ouputs/elasticsearch.Client
 type NetworkClient interface {
 	Client
 	Connectable

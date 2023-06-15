@@ -25,6 +25,7 @@ import (
 
 // Pipeline provides access to libbeat event publishing by creating a Client
 // instance.
+// @implemented libbeat/publisher/pipeline.Pipeline
 type Pipeline interface {
 	ConnectWith(ClientConfig) (Client, error)
 	Connect() (Client, error)
@@ -33,6 +34,7 @@ type Pipeline interface {
 type PipelineConnector = Pipeline
 
 // Client holds a connection to the beats publisher pipeline
+// @implemented libbeat/publisher/pipeline.client
 type Client interface {
 	Publish(Event)
 	PublishAll([]Event)

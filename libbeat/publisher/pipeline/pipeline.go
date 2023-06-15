@@ -53,7 +53,7 @@ import (
 //
 // For client connecting to this pipeline, the default PublishMode is
 // OutputChooses.
-// 实现beat.Pipeline
+// @implement libbeat/beat.Pipeline
 type Pipeline struct {
 	beatInfo beat.Info
 
@@ -240,6 +240,7 @@ func (p *Pipeline) Close() error {
 }
 
 // Connect creates a new client with default settings.
+// @implement libbeat/beat.Pipeline.Connect
 func (p *Pipeline) Connect() (beat.Client, error) {
 	return p.ConnectWith(beat.ClientConfig{})
 }
@@ -248,6 +249,7 @@ func (p *Pipeline) Connect() (beat.Client, error) {
 // The client behavior on close and ACK handling can be configured by setting
 // the appropriate fields in the passed ClientConfig.
 // If not set otherwise the defaut publish mode is OutputChooses.
+// @implement libbeat/beat.Pipeline.ConnectWith
 func (p *Pipeline) ConnectWith(cfg beat.ClientConfig) (beat.Client, error) {
 	var (
 		canDrop    bool

@@ -187,6 +187,7 @@ func NewQueue(
 	return b
 }
 
+// @implement libbeat/pipeline/queue.Close
 func (b *broker) Close() error {
 	close(b.done)
 	if b.waitOnClose {
@@ -195,16 +196,19 @@ func (b *broker) Close() error {
 	return nil
 }
 
+// @implement libbeat/pipeline/queue.BufferConfig
 func (b *broker) BufferConfig() queue.BufferConfig {
 	return queue.BufferConfig{
 		MaxEvents: b.bufSize,
 	}
 }
 
+// @implement libbeat/pipeline/queue.Producer
 func (b *broker) Producer(cfg queue.ProducerConfig) queue.Producer {
 	return newProducer(b, cfg.ACK, cfg.OnDrop, cfg.DropOnCancel)
 }
 
+// @implement libbeat/pipeline/queue.Consumer
 func (b *broker) Consumer() queue.Consumer {
 	return newConsumer(b)
 }

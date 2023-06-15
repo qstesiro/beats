@@ -67,7 +67,7 @@ type clientCloseWaiter struct {
 	waitClose  time.Duration
 }
 
-// libbeat/beat.Client.PublishAll
+// @implement libbeat/beat.Client.PublishAll
 func (c *client) PublishAll(events []beat.Event) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -77,7 +77,7 @@ func (c *client) PublishAll(events []beat.Event) {
 	}
 }
 
-// libbeat/beat.Client.Publish
+// @implement libbeat/beat.Client.Publish
 func (c *client) Publish(e beat.Event) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -149,7 +149,7 @@ func (c *client) publish(e beat.Event) {
 	}
 }
 
-// libbeat/beat.Client.Close
+// @implement libbeat/beat.Client.Close
 func (c *client) Close() error {
 	log := c.logger()
 

@@ -31,7 +31,7 @@ type Batch interface {
 	reduceTTL() bool
 }
 
-// @implement libbeat/pipeline.Batch
+// @implement libbeat/publisher/pipeline.Batch
 type batch struct {
 	original queue.Batch
 	ctx      *batchContext

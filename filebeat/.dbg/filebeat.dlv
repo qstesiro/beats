@@ -118,7 +118,7 @@ b pipeline.New
 # b pipeline.makeClientWorker
 # b pipeline.newOutputController
 b pipeline.(*outputController).Set
-# b pipeline.newEventConsumer
+b pipeline.newEventConsumer
 # b pipeline.(*eventConsumer).loop
 # b pipeline.newBatch
 
