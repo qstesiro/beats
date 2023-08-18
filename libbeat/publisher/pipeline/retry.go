@@ -34,7 +34,7 @@ type retryer struct {
 
 	done chan struct{}
 
-	consumer interruptor
+	consumer interruptor // eventConsumer
 
 	sig        chan retryerSignal
 	out        workQueue

@@ -76,12 +76,12 @@ func newOutputController(
 	}
 
 	ctx := &batchContext{}
-	c.consumer = newEventConsumer(monitors.Logger, queue, ctx)
+	c.consumer = newEventConsumer(monitors.Logger, queue, ctx) // 启动处于暂停状态
 	c.retryer = newRetryer(monitors.Logger, observer, c.workQueue, c.consumer)
 	ctx.observer = observer
 	ctx.retryer = c.retryer
 
-	c.consumer.sigContinue()
+	c.consumer.sigContinue() // 启动consumer
 
 	return c
 }
@@ -117,6 +117,7 @@ func (c *outputController) Set(outGrp outputs.Group) {
 	}
 
 	// update consumer and retryer
+	// sigConsumerCheck
 	c.consumer.sigPause()
 	if c.out != nil {
 		for range c.out.outputs {
@@ -126,6 +127,8 @@ func (c *outputController) Set(outGrp outputs.Group) {
 	for range clients {
 		c.retryer.sigOutputAdded()
 	}
+	// sigConsumerUpdateOutput
+	// sigConsumerUpdateInput
 	c.consumer.updOutput(grp)
 
 	// close old group, so events are send to new workQueue via retryer
@@ -138,6 +141,7 @@ func (c *outputController) Set(outGrp outputs.Group) {
 	c.out = grp
 
 	// restart consumer (potentially blocked by retryer)
+	// sigConsumerCheck
 	c.consumer.sigContinue()
 
 	c.observer.updateOutputGroup()
